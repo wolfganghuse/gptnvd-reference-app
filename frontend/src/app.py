@@ -14,6 +14,7 @@ from langchain.chains import RetrievalQA
 from torch import cuda
 from config import *
 
+
 ABS_PATH: str = os.path.dirname(os.path.abspath(__file__))
 DB_DIR: str = os.path.join(ABS_PATH, "db")
 
@@ -41,11 +42,11 @@ vectorstore = Milvus(
 )
 
 def load_model():
-    llm = Ollama(
-        model="mistral",
-        verbose=True,
-        callback_manager=CallbackManager([StreamingStdOutCallbackHandler()]),
+    #"http://llama2chat.llm1.kubeflow4.gptnvd.dachlab.net/v2/models/llama2chat_7b/infer"
+    llm = KserveML(
+      endpoint_url=INFERENCE_ENDPOINT
     )
+
     return llm
 
 
