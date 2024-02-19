@@ -1,4 +1,5 @@
 # Import necessary libraries
+import logging
 import streamlit as st
 from streamlit_chat import message
 from langchain.prompts import PromptTemplate
@@ -7,8 +8,8 @@ from langchain.vectorstores import FAISS
 from langchain.llms import CTransformers
 from langchain.chains import ConversationalRetrievalChain
 from KserveML import KserveML
-from langchain.memory.chat_message_histories import RedisChatMessageHistory
-from langchain.memory import ConversationBufferMemory
+#from langchain.memory.chat_message_histories import RedisChatMessageHistory
+#from langchain.memory import ConversationBufferMemory
 from torch import cuda
 from langchain.vectorstores import Milvus
 import uuid
@@ -28,6 +29,15 @@ def load_llm():
     )
 
     return llm
+
+@st.cache_resource()
+def connect_redis():
+    message_history = RedisChatMessageHistory(
+        url='redis://:'+REDIS_PASSWORD+'@'+REDIS_URL, ttl=180, session_id=generate_session_id()
+    )
+
+    return message_history
+
 
 @st.cache_resource()
 def load_vector_store():
@@ -98,13 +108,22 @@ Details:
 - Conversational memory uses Redis Cache
 - Streamlit-based Frontend
 """)
+
+# Configure Logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("debug.log"),
+        logging.StreamHandler()
+    ]
+)
 # Handle file upload
 # Load the language model
 llm = load_llm()
 db = load_vector_store()
-message_history = RedisChatMessageHistory(
-    url='redis://:'+REDIS_PASSWORD+'@'+REDIS_URL, ttl=180, session_id=generate_session_id()
-)
+message_history = connect_redis()
+
 memory = ConversationBufferMemory(memory_key="chat_history", chat_memory=message_history, return_messages=True)
 memory.clear()
 # Create a conversational chain
@@ -126,9 +145,14 @@ chain = ConversationalRetrievalChain.from_llm(
 
 # Function for conversational chat
 def conversational_chat(query):
-    result = chain({"question": query})
-    return result["answer"]
-
+    try:
+        result = chain({"question": query})
+        logging.info(f"Query processed: {query}")
+        return result["answer"]
+    except Exception as e:
+        logging.error(f"Error processing query: {query}, Error: {e}")
+        return "Sorry, I couldn't process your request."
+    
 # Initialize chat history
 if 'history' not in st.session_state:
     st.session_state['history'] = []
@@ -151,6 +175,7 @@ with container:
         submit_button = st.form_submit_button(label='Send')
 
     if submit_button and user_input:
+        logging.info(f"User input received: {user_input}")
         output = conversational_chat(user_input)
         st.session_state['past'].append(user_input)
         st.session_state['generated'].append(output)

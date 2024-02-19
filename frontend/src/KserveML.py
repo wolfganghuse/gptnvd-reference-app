@@ -1,6 +1,9 @@
 from typing import Any, List, Mapping, Optional
+import logging
 
 import requests
+
+from transformers import GPT2Tokenizer
 
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.llms.base import LLM
@@ -19,6 +22,9 @@ class KserveML(LLM):
             )
             kserve_llm = KserveML(endpoint_url=endpoint_url)
     """
+
+    # Initialize a tokenizer (use the appropriate one for your LLM)
+    tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
 
     endpoint_url: str = (
         "https://models.hosted-on.kserve.hosting/mpt-7b-instruct/v1/predict"
@@ -72,6 +78,14 @@ class KserveML(LLM):
 
                 response = kserve_llm("Tell me a joke.")
         """
+        # Tokenize the input and count the tokens
+        logging.debug(f"Calculating Tokens...")
+        tokenized_input = self.tokenizer.encode(prompt, add_special_tokens=False)
+        num_tokens = len(tokenized_input)
+
+        # Log the number of tokens
+        logging.debug(f"Number of tokens in request: {num_tokens}")
+
         _model_kwargs = self.model_kwargs or {}
 
         payload = {
@@ -90,10 +104,14 @@ class KserveML(LLM):
         #print(f"Sending request to {self.endpoint_url} with payload: {payload}")  # Debug output
 
         # send request
+        logging.debug(f"Sending request to {self.endpoint_url} with prompt: {prompt}")
+
+
         try:
             response = requests.post(self.endpoint_url, json=payload)
-            #print(f"Response received: {response.text}")  # Debug output
+            logging.debug(f"Response received: {response.text}")
         except requests.exceptions.RequestException as e:
+            logging.error(f"Request exception: {e}")
             raise ValueError(f"Error raised by inference endpoint: {e}")
 
         try:
@@ -125,6 +143,7 @@ class KserveML(LLM):
             return text
 
         except requests.exceptions.JSONDecodeError as e:
+            logging.error(f"JSON decode error: {e}. Response: {response.text}")
             raise ValueError(
                 f"Error raised by inference API: {e}.\nResponse: {response.text}"
             )

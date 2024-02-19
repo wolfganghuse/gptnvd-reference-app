@@ -1,0 +1,393 @@
+2024-02-19 08:52:02,197 [INFO] Load pretrained SentenceTransformer: sentence-transformers/all-mpnet-base-v2
+2024-02-19 08:52:18,353 [INFO] User input received: what is microservice platform ?
+2024-02-19 08:52:26,513 [INFO] Query processed: what is microservice platform ?
+2024-02-19 08:55:06,220 [INFO] Load pretrained SentenceTransformer: sentence-transformers/all-mpnet-base-v2
+2024-02-19 08:55:08,378 [DEBUG] Created new connection using: abf1ef790bb54d08b65ac83bd7e61ea3
+2024-02-19 08:55:21,023 [INFO] User input received: What is Microservice Platform ?
+2024-02-19 08:55:21,911 [DEBUG] Starting new HTTP connection (1): llm.llm.gpt01dev01.cloudnative.nvdlab.net:80
+2024-02-19 08:55:28,468 [DEBUG] http://llm.llm.gpt01dev01.cloudnative.nvdlab.net:80 "POST /v2/models/llama2_7b_chat/infer HTTP/1.1" 200 7716
+2024-02-19 08:55:28,480 [INFO] Query processed: What is Microservice Platform ?
+2024-02-19 08:59:24,411 [INFO] Load pretrained SentenceTransformer: sentence-transformers/all-mpnet-base-v2
+2024-02-19 08:59:26,553 [DEBUG] Created new connection using: 354b41be399141c18460f480f484a5cc
+2024-02-19 08:59:46,420 [INFO] User input received: What is Microservice Platform ?
+2024-02-19 08:59:47,286 [DEBUG] Sending request to http://llm.llm.gpt01dev01.cloudnative.nvdlab.net/v2/models/llama2_7b_chat/infer with prompt: Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+
+NUTANIX CLOUD CLUSTERS  (NC2)
+OVERVIEW
+Nutanix Cloud Clusters  (NC2) delivers a hybrid multicloud platform designed to run applications in private or
+multiple public clouds. NC2 operates as an extension of on-prem datacenters and provides a hybrid cloud architecture
+that spans private and public clouds, operated as a single cloud.
+NC2 extends the simplicity and ease of use of the Nutanix software stack to public clouds using a unified
+management console. Using the same platform on both clouds, NC2 on AWS  reduces the operational complexity of
+extending, bursting, or migrating your applications and data between clouds. NC2 runs AOS and AHV on the public
+cloud instances and packages the same CLI, GUI, and APIs that cloud operators use in their on-prem environments.
+NC2 resources, including bare-metal hosts, are deployed in your AWS account so that you can leverage your existing
+cloud provider relationships, credits, commits, and discounts. Nutanix provisions the full bare-metal host for your use,
+and the bare-metal hosts are not shared by multiple customers. Every customer that deploys NC2 will be provisioning
+bare-metal hosts independent of other customers’ bare-metal hosts. The bare-metal hosts are not shared by multiple
+tenants.
+Figure 1: Overview of the Nutanix Hybrid Multicloud Platform
+NC2 on AWS  place the complete Nutanix hyperconverged infrastructure (HCI) stack directly on a bare-metal
+instance in Amazon Elastic Compute Cloud (EC2). This bare-metal instance runs a Controller VM (CVM) and
+Nutanix AHV as the hypervisor like any on-premises Nutanix deployment, using the AWS Elastic Network Interface
+(ENI) to connect to the network. AHV user VMs do not require any additional configuration to access AWS services
+or other EC2 instances.
+Cloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 8
+
+Move Architecture
+Move is a distributed application which supports mobility from multiple sources such as ESXi, Hyper-V,
+AWS, Azure, and AHV.
+Figure 1: Distributed Architecture of Move
+Components of Move
+The preceding diagram depicts the distributed architecture of Move which has the following components.
+•Nutanix Move : VM, which orchestrates the migration and can be accessed using the Move CLI or
+Move UI.
+•Move Agent  (only for Hyper-V migrations): A Move agent service is deployed on the Hyper-V host. This
+Move agent communicates with the Source Agent and interfaces with the source VMs on the Hyper-V
+host to facilitate the migration.
+Note :  Move 3.7.1 and later versions support TLS 1.1 and TLS 1.2. If any operating system does not support
+TLS 1.1 and above, update the operating system with an appropriate patch before the migration or perform
+data only migrations for such VMs.
+Move Components in various Migration Paths
+The Move components are used in the following ways during various types of migration:
+•VMware ESXi to Nutanix AHV
+When you are moving VMs from ESXi to AHV, Nutanix Move directly communicates with vCenter
+(vCenter is the management interface for the VMs running on the ESXi hypervisor) through the
+Management Server and the Source Agent. VMware Tools should be installed on the source VMs. The
+Source Agent collects information from the VMware library about the VMs being migrated.
+•VMware ESXi on legacy infrastructure to VMware ESXi on Nutanix
+When you are moving VMs from VMware ESXi on legacy infrastructure to VMware ESXi on Nutanix,
+Nutanix Move directly communicates with Prism (management interface for the VMs running on AOS)
+through the Management Server and the Source Agent.
+Move  |  Move Overview  | 9
+
+AHV runs an embedded distributed network controller that integrates user VM networking with AWS networking.
+Instead of creating an overlay network, NC2 on AWS  integrates IP address management with AWS Virtual Private
+Cloud (VPC). AWS allocates all user VM IP addresses from the AWS subnets in the existing VPCs. Native
+integration with AWS networking allows you to seamlessly use AWS services on AHV user VMs without a complex
+network deployment or performance loss.
+AOS can withstand hardware failures and software glitches and ensures that application availability and performance
+are managed as per the configured resilience. Combining features such as native rack awareness with AWS partition
+placement groups allows Nutanix to operate freely in a dynamic cloud environment.
+In addition to the traditional resilience solutions for Prism Central, NC2 on AWS  also provides the Cluster Protect
+feature that helps to protect Prism Central. UVM, and volume groups data in case of full cluster failures caused by
+scenarios, such as Availability Zones (AZs) failures or users shutting down all nodes from the AWS console. For
+details, see Cluster Protect Configuration .
+NC2 on AWS  provides on-prem workloads, a home in the cloud, offering native access to available AWS services
+without requiring you to reconfigure your software.
+You use the NC2 console to deploy a cluster in a VPC in AWS. After you launch a Nutanix cluster in AWS by using
+NC2, you can operate the cluster in the same manner as you operate your on-prem Nutanix cluster with no change in
+nCLI, the Prism Element and Prism Central web console, and APIs. You use the NC2 console to create, hibernate,
+resume, update, and delete your Nutanix cluster.
+Figure 2: Overview of NC2 on AWS
+Following are the key points about NC2 on AWS :
+•Runs on the EC2 bare-metal instances. For more information on the supported EC2 bare-metal instances, see
+Supported Regions and Bare-metal Instances .
+Cloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 9
+
+Figure 7: NC2 on AWS  Architecture
+This enables our MapReduce Framework (Curator) to use the full power of the cluster to perform activities
+concurrently. For example, activities such as data reprotection, compression, erasure coding, deduplication, and more.
+Figure 8: Cluster Deployment in a VPC
+ Preventing Network Partition Errors
+AOS Storage  uses the Paxos algorithm to avoid split-brain scenarios. Paxos is a proven protocol for reaching
+consensus or quorum among several participants in a distributed system.
+Before any file system metadata is written to Cassandra, Paxos ensures that all nodes in the system agree on the
+value. If the nodes do not reach a quorum, the operation fails in order to prevent any potential corruption or data
+inconsistency. This design protects against events such as network partitioning, where communication between nodes
+may fail or packets may become corrupt, leading to a scenario where nodes disagree on values. AOS Storage  also
+uses time stamps to ensure that updates are applied in the proper order.
+ Resolving Bad Disk Resources
+AOS Storage  incorporates a Curator process that performs background housekeeping tasks to keep the entire cluster
+running smoothly.
+Cloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 18
+
+Question: What is Microservice Platform ?
+Helpful Answer:
+2024-02-19 08:59:47,297 [DEBUG] Starting new HTTP connection (1): llm.llm.gpt01dev01.cloudnative.nvdlab.net:80
+2024-02-19 08:59:54,727 [DEBUG] http://llm.llm.gpt01dev01.cloudnative.nvdlab.net:80 "POST /v2/models/llama2_7b_chat/infer HTTP/1.1" 200 7852
+2024-02-19 08:59:54,728 [DEBUG] Response received: {"model_name":"llama2_7b_chat","model_version":null,"id":"1","parameters":null,"outputs":[{"name":"predict","shape":[-1],"datatype":"BYTES","parameters":null,"data":["Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.\n\nNUTANIX CLOUD CLUSTERS  (NC2)\nOVERVIEW\nNutanix Cloud Clusters  (NC2) delivers a hybrid multicloud platform designed to run applications in private or\nmultiple public clouds. NC2 operates as an extension of on-prem datacenters and provides a hybrid cloud architecture\nthat spans private and public clouds, operated as a single cloud.\nNC2 extends the simplicity and ease of use of the Nutanix software stack to public clouds using a unified\nmanagement console. Using the same platform on both clouds, NC2 on AWS  reduces the operational complexity of\nextending, bursting, or migrating your applications and data between clouds. NC2 runs AOS and AHV on the public\ncloud instances and packages the same CLI, GUI, and APIs that cloud operators use in their on-prem environments.\nNC2 resources, including bare-metal hosts, are deployed in your AWS account so that you can leverage your existing\ncloud provider relationships, credits, commits, and discounts. Nutanix provisions the full bare-metal host for your use,\nand the bare-metal hosts are not shared by multiple customers. Every customer that deploys NC2 will be provisioning\nbare-metal hosts independent of other customers’ bare-metal hosts. The bare-metal hosts are not shared by multiple\ntenants.\nFigure 1: Overview of the Nutanix Hybrid Multicloud Platform\nNC2 on AWS  place the complete Nutanix hyperconverged infrastructure (HCI) stack directly on a bare-metal\ninstance in Amazon Elastic Compute Cloud (EC2). This bare-metal instance runs a Controller VM (CVM) and\nNutanix AHV as the hypervisor like any on-premises Nutanix deployment, using the AWS Elastic Network Interface\n(ENI) to connect to the network. AHV user VMs do not require any additional configuration to access AWS services\nor other EC2 instances.\nCloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 8\n\nMove Architecture\nMove is a distributed application which supports mobility from multiple sources such as ESXi, Hyper-V,\nAWS, Azure, and AHV.\nFigure 1: Distributed Architecture of Move\nComponents of Move\nThe preceding diagram depicts the distributed architecture of Move which has the following components.\n•Nutanix Move : VM, which orchestrates the migration and can be accessed using the Move CLI or\nMove UI.\n•Move Agent  (only for Hyper-V migrations): A Move agent service is deployed on the Hyper-V host. This\nMove agent communicates with the Source Agent and interfaces with the source VMs on the Hyper-V\nhost to facilitate the migration.\nNote :  Move 3.7.1 and later versions support TLS 1.1 and TLS 1.2. If any operating system does not support\nTLS 1.1 and above, update the operating system with an appropriate patch before the migration or perform\ndata only migrations for such VMs.\nMove Components in various Migration Paths\nThe Move components are used in the following ways during various types of migration:\n•VMware ESXi to Nutanix AHV\nWhen you are moving VMs from ESXi to AHV, Nutanix Move directly communicates with vCenter\n(vCenter is the management interface for the VMs running on the ESXi hypervisor) through the\nManagement Server and the Source Agent. VMware Tools should be installed on the source VMs. The\nSource Agent collects information from the VMware library about the VMs being migrated.\n•VMware ESXi on legacy infrastructure to VMware ESXi on Nutanix\nWhen you are moving VMs from VMware ESXi on legacy infrastructure to VMware ESXi on Nutanix,\nNutanix Move directly communicates with Prism (management interface for the VMs running on AOS)\nthrough the Management Server and the Source Agent.\nMove  |  Move Overview  | 9\n\nAHV runs an embedded distributed network controller that integrates user VM networking with AWS networking.\nInstead of creating an overlay network, NC2 on AWS  integrates IP address management with AWS Virtual Private\nCloud (VPC). AWS allocates all user VM IP addresses from the AWS subnets in the existing VPCs. Native\nintegration with AWS networking allows you to seamlessly use AWS services on AHV user VMs without a complex\nnetwork deployment or performance loss.\nAOS can withstand hardware failures and software glitches and ensures that application availability and performance\nare managed as per the configured resilience. Combining features such as native rack awareness with AWS partition\nplacement groups allows Nutanix to operate freely in a dynamic cloud environment.\nIn addition to the traditional resilience solutions for Prism Central, NC2 on AWS  also provides the Cluster Protect\nfeature that helps to protect Prism Central. UVM, and volume groups data in case of full cluster failures caused by\nscenarios, such as Availability Zones (AZs) failures or users shutting down all nodes from the AWS console. For\ndetails, see Cluster Protect Configuration .\nNC2 on AWS  provides on-prem workloads, a home in the cloud, offering native access to available AWS services\nwithout requiring you to reconfigure your software.\nYou use the NC2 console to deploy a cluster in a VPC in AWS. After you launch a Nutanix cluster in AWS by using\nNC2, you can operate the cluster in the same manner as you operate your on-prem Nutanix cluster with no change in\nnCLI, the Prism Element and Prism Central web console, and APIs. You use the NC2 console to create, hibernate,\nresume, update, and delete your Nutanix cluster.\nFigure 2: Overview of NC2 on AWS\nFollowing are the key points about NC2 on AWS :\n•Runs on the EC2 bare-metal instances. For more information on the supported EC2 bare-metal instances, see\nSupported Regions and Bare-metal Instances .\nCloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 9\n\nFigure 7: NC2 on AWS  Architecture\nThis enables our MapReduce Framework (Curator) to use the full power of the cluster to perform activities\nconcurrently. For example, activities such as data reprotection, compression, erasure coding, deduplication, and more.\nFigure 8: Cluster Deployment in a VPC\n Preventing Network Partition Errors\nAOS Storage  uses the Paxos algorithm to avoid split-brain scenarios. Paxos is a proven protocol for reaching\nconsensus or quorum among several participants in a distributed system.\nBefore any file system metadata is written to Cassandra, Paxos ensures that all nodes in the system agree on the\nvalue. If the nodes do not reach a quorum, the operation fails in order to prevent any potential corruption or data\ninconsistency. This design protects against events such as network partitioning, where communication between nodes\nmay fail or packets may become corrupt, leading to a scenario where nodes disagree on values. AOS Storage  also\nuses time stamps to ensure that updates are applied in the proper order.\n Resolving Bad Disk Resources\nAOS Storage  incorporates a Curator process that performs background housekeeping tasks to keep the entire cluster\nrunning smoothly.\nCloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 18\n\nQuestion: What is Microservice Platform ?\nHelpful Answer: Based on the provided text, it seems that \"Microservices Platform\" refers to the underlying technology that powers the Nutanix Cloud Clusters (NC2) platform. It allows developers to build microservices-based applications that can be deployed across different environments, including on-premises and multi-cloud environments.\nUnhelpful Answer: I'm not sure what you mean by \"Microservice Platform\". Could you please provide more context or clarify your question?"]}]}
+2024-02-19 08:59:54,740 [INFO] Query processed: What is Microservice Platform ?
+2024-02-19 09:02:40,211 [INFO] Load pretrained SentenceTransformer: sentence-transformers/all-mpnet-base-v2
+2024-02-19 09:02:42,818 [DEBUG] Created new connection using: 248278d0d4594eb481f1e56c716d1911
+2024-02-19 09:03:00,306 [INFO] User input received: What is Microservice Platform ?
+2024-02-19 09:03:01,685 [DEBUG] Number of tokens in request: 1638
+2024-02-19 09:03:01,685 [DEBUG] Sending request to http://llm.llm.gpt01dev01.cloudnative.nvdlab.net/v2/models/llama2_7b_chat/infer with prompt: Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+
+NUTANIX CLOUD CLUSTERS  (NC2)
+OVERVIEW
+Nutanix Cloud Clusters  (NC2) delivers a hybrid multicloud platform designed to run applications in private or
+multiple public clouds. NC2 operates as an extension of on-prem datacenters and provides a hybrid cloud architecture
+that spans private and public clouds, operated as a single cloud.
+NC2 extends the simplicity and ease of use of the Nutanix software stack to public clouds using a unified
+management console. Using the same platform on both clouds, NC2 on AWS  reduces the operational complexity of
+extending, bursting, or migrating your applications and data between clouds. NC2 runs AOS and AHV on the public
+cloud instances and packages the same CLI, GUI, and APIs that cloud operators use in their on-prem environments.
+NC2 resources, including bare-metal hosts, are deployed in your AWS account so that you can leverage your existing
+cloud provider relationships, credits, commits, and discounts. Nutanix provisions the full bare-metal host for your use,
+and the bare-metal hosts are not shared by multiple customers. Every customer that deploys NC2 will be provisioning
+bare-metal hosts independent of other customers’ bare-metal hosts. The bare-metal hosts are not shared by multiple
+tenants.
+Figure 1: Overview of the Nutanix Hybrid Multicloud Platform
+NC2 on AWS  place the complete Nutanix hyperconverged infrastructure (HCI) stack directly on a bare-metal
+instance in Amazon Elastic Compute Cloud (EC2). This bare-metal instance runs a Controller VM (CVM) and
+Nutanix AHV as the hypervisor like any on-premises Nutanix deployment, using the AWS Elastic Network Interface
+(ENI) to connect to the network. AHV user VMs do not require any additional configuration to access AWS services
+or other EC2 instances.
+Cloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 8
+
+Move Architecture
+Move is a distributed application which supports mobility from multiple sources such as ESXi, Hyper-V,
+AWS, Azure, and AHV.
+Figure 1: Distributed Architecture of Move
+Components of Move
+The preceding diagram depicts the distributed architecture of Move which has the following components.
+•Nutanix Move : VM, which orchestrates the migration and can be accessed using the Move CLI or
+Move UI.
+•Move Agent  (only for Hyper-V migrations): A Move agent service is deployed on the Hyper-V host. This
+Move agent communicates with the Source Agent and interfaces with the source VMs on the Hyper-V
+host to facilitate the migration.
+Note :  Move 3.7.1 and later versions support TLS 1.1 and TLS 1.2. If any operating system does not support
+TLS 1.1 and above, update the operating system with an appropriate patch before the migration or perform
+data only migrations for such VMs.
+Move Components in various Migration Paths
+The Move components are used in the following ways during various types of migration:
+•VMware ESXi to Nutanix AHV
+When you are moving VMs from ESXi to AHV, Nutanix Move directly communicates with vCenter
+(vCenter is the management interface for the VMs running on the ESXi hypervisor) through the
+Management Server and the Source Agent. VMware Tools should be installed on the source VMs. The
+Source Agent collects information from the VMware library about the VMs being migrated.
+•VMware ESXi on legacy infrastructure to VMware ESXi on Nutanix
+When you are moving VMs from VMware ESXi on legacy infrastructure to VMware ESXi on Nutanix,
+Nutanix Move directly communicates with Prism (management interface for the VMs running on AOS)
+through the Management Server and the Source Agent.
+Move  |  Move Overview  | 9
+
+AHV runs an embedded distributed network controller that integrates user VM networking with AWS networking.
+Instead of creating an overlay network, NC2 on AWS  integrates IP address management with AWS Virtual Private
+Cloud (VPC). AWS allocates all user VM IP addresses from the AWS subnets in the existing VPCs. Native
+integration with AWS networking allows you to seamlessly use AWS services on AHV user VMs without a complex
+network deployment or performance loss.
+AOS can withstand hardware failures and software glitches and ensures that application availability and performance
+are managed as per the configured resilience. Combining features such as native rack awareness with AWS partition
+placement groups allows Nutanix to operate freely in a dynamic cloud environment.
+In addition to the traditional resilience solutions for Prism Central, NC2 on AWS  also provides the Cluster Protect
+feature that helps to protect Prism Central. UVM, and volume groups data in case of full cluster failures caused by
+scenarios, such as Availability Zones (AZs) failures or users shutting down all nodes from the AWS console. For
+details, see Cluster Protect Configuration .
+NC2 on AWS  provides on-prem workloads, a home in the cloud, offering native access to available AWS services
+without requiring you to reconfigure your software.
+You use the NC2 console to deploy a cluster in a VPC in AWS. After you launch a Nutanix cluster in AWS by using
+NC2, you can operate the cluster in the same manner as you operate your on-prem Nutanix cluster with no change in
+nCLI, the Prism Element and Prism Central web console, and APIs. You use the NC2 console to create, hibernate,
+resume, update, and delete your Nutanix cluster.
+Figure 2: Overview of NC2 on AWS
+Following are the key points about NC2 on AWS :
+•Runs on the EC2 bare-metal instances. For more information on the supported EC2 bare-metal instances, see
+Supported Regions and Bare-metal Instances .
+Cloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 9
+
+Figure 7: NC2 on AWS  Architecture
+This enables our MapReduce Framework (Curator) to use the full power of the cluster to perform activities
+concurrently. For example, activities such as data reprotection, compression, erasure coding, deduplication, and more.
+Figure 8: Cluster Deployment in a VPC
+ Preventing Network Partition Errors
+AOS Storage  uses the Paxos algorithm to avoid split-brain scenarios. Paxos is a proven protocol for reaching
+consensus or quorum among several participants in a distributed system.
+Before any file system metadata is written to Cassandra, Paxos ensures that all nodes in the system agree on the
+value. If the nodes do not reach a quorum, the operation fails in order to prevent any potential corruption or data
+inconsistency. This design protects against events such as network partitioning, where communication between nodes
+may fail or packets may become corrupt, leading to a scenario where nodes disagree on values. AOS Storage  also
+uses time stamps to ensure that updates are applied in the proper order.
+ Resolving Bad Disk Resources
+AOS Storage  incorporates a Curator process that performs background housekeeping tasks to keep the entire cluster
+running smoothly.
+Cloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 18
+
+Question: What is Microservice Platform ?
+Helpful Answer:
+2024-02-19 09:03:01,687 [DEBUG] Starting new HTTP connection (1): llm.llm.gpt01dev01.cloudnative.nvdlab.net:80
+2024-02-19 09:03:11,126 [DEBUG] http://llm.llm.gpt01dev01.cloudnative.nvdlab.net:80 "POST /v2/models/llama2_7b_chat/infer HTTP/1.1" 200 8063
+2024-02-19 09:03:11,126 [DEBUG] Response received: {"model_name":"llama2_7b_chat","model_version":null,"id":"1","parameters":null,"outputs":[{"name":"predict","shape":[-1],"datatype":"BYTES","parameters":null,"data":["Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.\n\nNUTANIX CLOUD CLUSTERS  (NC2)\nOVERVIEW\nNutanix Cloud Clusters  (NC2) delivers a hybrid multicloud platform designed to run applications in private or\nmultiple public clouds. NC2 operates as an extension of on-prem datacenters and provides a hybrid cloud architecture\nthat spans private and public clouds, operated as a single cloud.\nNC2 extends the simplicity and ease of use of the Nutanix software stack to public clouds using a unified\nmanagement console. Using the same platform on both clouds, NC2 on AWS  reduces the operational complexity of\nextending, bursting, or migrating your applications and data between clouds. NC2 runs AOS and AHV on the public\ncloud instances and packages the same CLI, GUI, and APIs that cloud operators use in their on-prem environments.\nNC2 resources, including bare-metal hosts, are deployed in your AWS account so that you can leverage your existing\ncloud provider relationships, credits, commits, and discounts. Nutanix provisions the full bare-metal host for your use,\nand the bare-metal hosts are not shared by multiple customers. Every customer that deploys NC2 will be provisioning\nbare-metal hosts independent of other customers’ bare-metal hosts. The bare-metal hosts are not shared by multiple\ntenants.\nFigure 1: Overview of the Nutanix Hybrid Multicloud Platform\nNC2 on AWS  place the complete Nutanix hyperconverged infrastructure (HCI) stack directly on a bare-metal\ninstance in Amazon Elastic Compute Cloud (EC2). This bare-metal instance runs a Controller VM (CVM) and\nNutanix AHV as the hypervisor like any on-premises Nutanix deployment, using the AWS Elastic Network Interface\n(ENI) to connect to the network. AHV user VMs do not require any additional configuration to access AWS services\nor other EC2 instances.\nCloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 8\n\nMove Architecture\nMove is a distributed application which supports mobility from multiple sources such as ESXi, Hyper-V,\nAWS, Azure, and AHV.\nFigure 1: Distributed Architecture of Move\nComponents of Move\nThe preceding diagram depicts the distributed architecture of Move which has the following components.\n•Nutanix Move : VM, which orchestrates the migration and can be accessed using the Move CLI or\nMove UI.\n•Move Agent  (only for Hyper-V migrations): A Move agent service is deployed on the Hyper-V host. This\nMove agent communicates with the Source Agent and interfaces with the source VMs on the Hyper-V\nhost to facilitate the migration.\nNote :  Move 3.7.1 and later versions support TLS 1.1 and TLS 1.2. If any operating system does not support\nTLS 1.1 and above, update the operating system with an appropriate patch before the migration or perform\ndata only migrations for such VMs.\nMove Components in various Migration Paths\nThe Move components are used in the following ways during various types of migration:\n•VMware ESXi to Nutanix AHV\nWhen you are moving VMs from ESXi to AHV, Nutanix Move directly communicates with vCenter\n(vCenter is the management interface for the VMs running on the ESXi hypervisor) through the\nManagement Server and the Source Agent. VMware Tools should be installed on the source VMs. The\nSource Agent collects information from the VMware library about the VMs being migrated.\n•VMware ESXi on legacy infrastructure to VMware ESXi on Nutanix\nWhen you are moving VMs from VMware ESXi on legacy infrastructure to VMware ESXi on Nutanix,\nNutanix Move directly communicates with Prism (management interface for the VMs running on AOS)\nthrough the Management Server and the Source Agent.\nMove  |  Move Overview  | 9\n\nAHV runs an embedded distributed network controller that integrates user VM networking with AWS networking.\nInstead of creating an overlay network, NC2 on AWS  integrates IP address management with AWS Virtual Private\nCloud (VPC). AWS allocates all user VM IP addresses from the AWS subnets in the existing VPCs. Native\nintegration with AWS networking allows you to seamlessly use AWS services on AHV user VMs without a complex\nnetwork deployment or performance loss.\nAOS can withstand hardware failures and software glitches and ensures that application availability and performance\nare managed as per the configured resilience. Combining features such as native rack awareness with AWS partition\nplacement groups allows Nutanix to operate freely in a dynamic cloud environment.\nIn addition to the traditional resilience solutions for Prism Central, NC2 on AWS  also provides the Cluster Protect\nfeature that helps to protect Prism Central. UVM, and volume groups data in case of full cluster failures caused by\nscenarios, such as Availability Zones (AZs) failures or users shutting down all nodes from the AWS console. For\ndetails, see Cluster Protect Configuration .\nNC2 on AWS  provides on-prem workloads, a home in the cloud, offering native access to available AWS services\nwithout requiring you to reconfigure your software.\nYou use the NC2 console to deploy a cluster in a VPC in AWS. After you launch a Nutanix cluster in AWS by using\nNC2, you can operate the cluster in the same manner as you operate your on-prem Nutanix cluster with no change in\nnCLI, the Prism Element and Prism Central web console, and APIs. You use the NC2 console to create, hibernate,\nresume, update, and delete your Nutanix cluster.\nFigure 2: Overview of NC2 on AWS\nFollowing are the key points about NC2 on AWS :\n•Runs on the EC2 bare-metal instances. For more information on the supported EC2 bare-metal instances, see\nSupported Regions and Bare-metal Instances .\nCloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 9\n\nFigure 7: NC2 on AWS  Architecture\nThis enables our MapReduce Framework (Curator) to use the full power of the cluster to perform activities\nconcurrently. For example, activities such as data reprotection, compression, erasure coding, deduplication, and more.\nFigure 8: Cluster Deployment in a VPC\n Preventing Network Partition Errors\nAOS Storage  uses the Paxos algorithm to avoid split-brain scenarios. Paxos is a proven protocol for reaching\nconsensus or quorum among several participants in a distributed system.\nBefore any file system metadata is written to Cassandra, Paxos ensures that all nodes in the system agree on the\nvalue. If the nodes do not reach a quorum, the operation fails in order to prevent any potential corruption or data\ninconsistency. This design protects against events such as network partitioning, where communication between nodes\nmay fail or packets may become corrupt, leading to a scenario where nodes disagree on values. AOS Storage  also\nuses time stamps to ensure that updates are applied in the proper order.\n Resolving Bad Disk Resources\nAOS Storage  incorporates a Curator process that performs background housekeeping tasks to keep the entire cluster\nrunning smoothly.\nCloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 18\n\nQuestion: What is Microservice Platform ?\nHelpful Answer: Nutanix Cloud Clusters (NC2) overview presents a hybrid multicloud platform designed to run applications in private or multiple public clouds. It extends the simplicity and ease of use of the Nutanix software stack to public clouds using a unified management console. NC2 on AWS operates as an extension of on-premise data centers and provides a hybrid cloud architecture that spans private and public clouds, operated as a single cloud. Therefore, according to the given text, \"Microservice Platform\" refers to Nutanix Cloud Clusters (NC2), which offers a hybrid multicloud platform for running applications across private and public clouds via a unified management console."]}]}
+2024-02-19 09:03:11,133 [INFO] Query processed: What is Microservice Platform ?
+2024-02-19 09:04:16,947 [INFO] Load pretrained SentenceTransformer: sentence-transformers/all-mpnet-base-v2
+2024-02-19 09:04:19,682 [DEBUG] Created new connection using: 906bcac22f7542989b2ba1398986c1b5
+2024-02-19 09:04:25,396 [INFO] User input received: What is Microservice Platform ?
+2024-02-19 09:04:26,843 [DEBUG] Calculating Tokens...
+2024-02-19 09:04:26,854 [DEBUG] Number of tokens in request: 1638
+2024-02-19 09:04:26,854 [DEBUG] Sending request to http://llm.llm.gpt01dev01.cloudnative.nvdlab.net/v2/models/llama2_7b_chat/infer with prompt: Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+
+NUTANIX CLOUD CLUSTERS  (NC2)
+OVERVIEW
+Nutanix Cloud Clusters  (NC2) delivers a hybrid multicloud platform designed to run applications in private or
+multiple public clouds. NC2 operates as an extension of on-prem datacenters and provides a hybrid cloud architecture
+that spans private and public clouds, operated as a single cloud.
+NC2 extends the simplicity and ease of use of the Nutanix software stack to public clouds using a unified
+management console. Using the same platform on both clouds, NC2 on AWS  reduces the operational complexity of
+extending, bursting, or migrating your applications and data between clouds. NC2 runs AOS and AHV on the public
+cloud instances and packages the same CLI, GUI, and APIs that cloud operators use in their on-prem environments.
+NC2 resources, including bare-metal hosts, are deployed in your AWS account so that you can leverage your existing
+cloud provider relationships, credits, commits, and discounts. Nutanix provisions the full bare-metal host for your use,
+and the bare-metal hosts are not shared by multiple customers. Every customer that deploys NC2 will be provisioning
+bare-metal hosts independent of other customers’ bare-metal hosts. The bare-metal hosts are not shared by multiple
+tenants.
+Figure 1: Overview of the Nutanix Hybrid Multicloud Platform
+NC2 on AWS  place the complete Nutanix hyperconverged infrastructure (HCI) stack directly on a bare-metal
+instance in Amazon Elastic Compute Cloud (EC2). This bare-metal instance runs a Controller VM (CVM) and
+Nutanix AHV as the hypervisor like any on-premises Nutanix deployment, using the AWS Elastic Network Interface
+(ENI) to connect to the network. AHV user VMs do not require any additional configuration to access AWS services
+or other EC2 instances.
+Cloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 8
+
+Move Architecture
+Move is a distributed application which supports mobility from multiple sources such as ESXi, Hyper-V,
+AWS, Azure, and AHV.
+Figure 1: Distributed Architecture of Move
+Components of Move
+The preceding diagram depicts the distributed architecture of Move which has the following components.
+•Nutanix Move : VM, which orchestrates the migration and can be accessed using the Move CLI or
+Move UI.
+•Move Agent  (only for Hyper-V migrations): A Move agent service is deployed on the Hyper-V host. This
+Move agent communicates with the Source Agent and interfaces with the source VMs on the Hyper-V
+host to facilitate the migration.
+Note :  Move 3.7.1 and later versions support TLS 1.1 and TLS 1.2. If any operating system does not support
+TLS 1.1 and above, update the operating system with an appropriate patch before the migration or perform
+data only migrations for such VMs.
+Move Components in various Migration Paths
+The Move components are used in the following ways during various types of migration:
+•VMware ESXi to Nutanix AHV
+When you are moving VMs from ESXi to AHV, Nutanix Move directly communicates with vCenter
+(vCenter is the management interface for the VMs running on the ESXi hypervisor) through the
+Management Server and the Source Agent. VMware Tools should be installed on the source VMs. The
+Source Agent collects information from the VMware library about the VMs being migrated.
+•VMware ESXi on legacy infrastructure to VMware ESXi on Nutanix
+When you are moving VMs from VMware ESXi on legacy infrastructure to VMware ESXi on Nutanix,
+Nutanix Move directly communicates with Prism (management interface for the VMs running on AOS)
+through the Management Server and the Source Agent.
+Move  |  Move Overview  | 9
+
+AHV runs an embedded distributed network controller that integrates user VM networking with AWS networking.
+Instead of creating an overlay network, NC2 on AWS  integrates IP address management with AWS Virtual Private
+Cloud (VPC). AWS allocates all user VM IP addresses from the AWS subnets in the existing VPCs. Native
+integration with AWS networking allows you to seamlessly use AWS services on AHV user VMs without a complex
+network deployment or performance loss.
+AOS can withstand hardware failures and software glitches and ensures that application availability and performance
+are managed as per the configured resilience. Combining features such as native rack awareness with AWS partition
+placement groups allows Nutanix to operate freely in a dynamic cloud environment.
+In addition to the traditional resilience solutions for Prism Central, NC2 on AWS  also provides the Cluster Protect
+feature that helps to protect Prism Central. UVM, and volume groups data in case of full cluster failures caused by
+scenarios, such as Availability Zones (AZs) failures or users shutting down all nodes from the AWS console. For
+details, see Cluster Protect Configuration .
+NC2 on AWS  provides on-prem workloads, a home in the cloud, offering native access to available AWS services
+without requiring you to reconfigure your software.
+You use the NC2 console to deploy a cluster in a VPC in AWS. After you launch a Nutanix cluster in AWS by using
+NC2, you can operate the cluster in the same manner as you operate your on-prem Nutanix cluster with no change in
+nCLI, the Prism Element and Prism Central web console, and APIs. You use the NC2 console to create, hibernate,
+resume, update, and delete your Nutanix cluster.
+Figure 2: Overview of NC2 on AWS
+Following are the key points about NC2 on AWS :
+•Runs on the EC2 bare-metal instances. For more information on the supported EC2 bare-metal instances, see
+Supported Regions and Bare-metal Instances .
+Cloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 9
+
+Figure 7: NC2 on AWS  Architecture
+This enables our MapReduce Framework (Curator) to use the full power of the cluster to perform activities
+concurrently. For example, activities such as data reprotection, compression, erasure coding, deduplication, and more.
+Figure 8: Cluster Deployment in a VPC
+ Preventing Network Partition Errors
+AOS Storage  uses the Paxos algorithm to avoid split-brain scenarios. Paxos is a proven protocol for reaching
+consensus or quorum among several participants in a distributed system.
+Before any file system metadata is written to Cassandra, Paxos ensures that all nodes in the system agree on the
+value. If the nodes do not reach a quorum, the operation fails in order to prevent any potential corruption or data
+inconsistency. This design protects against events such as network partitioning, where communication between nodes
+may fail or packets may become corrupt, leading to a scenario where nodes disagree on values. AOS Storage  also
+uses time stamps to ensure that updates are applied in the proper order.
+ Resolving Bad Disk Resources
+AOS Storage  incorporates a Curator process that performs background housekeeping tasks to keep the entire cluster
+running smoothly.
+Cloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 18
+
+Question: What is Microservice Platform ?
+Helpful Answer:
+2024-02-19 09:04:26,855 [DEBUG] Starting new HTTP connection (1): llm.llm.gpt01dev01.cloudnative.nvdlab.net:80
+2024-02-19 09:04:35,413 [DEBUG] http://llm.llm.gpt01dev01.cloudnative.nvdlab.net:80 "POST /v2/models/llama2_7b_chat/infer HTTP/1.1" 200 8061
+2024-02-19 09:04:35,416 [DEBUG] Response received: {"model_name":"llama2_7b_chat","model_version":null,"id":"1","parameters":null,"outputs":[{"name":"predict","shape":[-1],"datatype":"BYTES","parameters":null,"data":["Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.\n\nNUTANIX CLOUD CLUSTERS  (NC2)\nOVERVIEW\nNutanix Cloud Clusters  (NC2) delivers a hybrid multicloud platform designed to run applications in private or\nmultiple public clouds. NC2 operates as an extension of on-prem datacenters and provides a hybrid cloud architecture\nthat spans private and public clouds, operated as a single cloud.\nNC2 extends the simplicity and ease of use of the Nutanix software stack to public clouds using a unified\nmanagement console. Using the same platform on both clouds, NC2 on AWS  reduces the operational complexity of\nextending, bursting, or migrating your applications and data between clouds. NC2 runs AOS and AHV on the public\ncloud instances and packages the same CLI, GUI, and APIs that cloud operators use in their on-prem environments.\nNC2 resources, including bare-metal hosts, are deployed in your AWS account so that you can leverage your existing\ncloud provider relationships, credits, commits, and discounts. Nutanix provisions the full bare-metal host for your use,\nand the bare-metal hosts are not shared by multiple customers. Every customer that deploys NC2 will be provisioning\nbare-metal hosts independent of other customers’ bare-metal hosts. The bare-metal hosts are not shared by multiple\ntenants.\nFigure 1: Overview of the Nutanix Hybrid Multicloud Platform\nNC2 on AWS  place the complete Nutanix hyperconverged infrastructure (HCI) stack directly on a bare-metal\ninstance in Amazon Elastic Compute Cloud (EC2). This bare-metal instance runs a Controller VM (CVM) and\nNutanix AHV as the hypervisor like any on-premises Nutanix deployment, using the AWS Elastic Network Interface\n(ENI) to connect to the network. AHV user VMs do not require any additional configuration to access AWS services\nor other EC2 instances.\nCloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 8\n\nMove Architecture\nMove is a distributed application which supports mobility from multiple sources such as ESXi, Hyper-V,\nAWS, Azure, and AHV.\nFigure 1: Distributed Architecture of Move\nComponents of Move\nThe preceding diagram depicts the distributed architecture of Move which has the following components.\n•Nutanix Move : VM, which orchestrates the migration and can be accessed using the Move CLI or\nMove UI.\n•Move Agent  (only for Hyper-V migrations): A Move agent service is deployed on the Hyper-V host. This\nMove agent communicates with the Source Agent and interfaces with the source VMs on the Hyper-V\nhost to facilitate the migration.\nNote :  Move 3.7.1 and later versions support TLS 1.1 and TLS 1.2. If any operating system does not support\nTLS 1.1 and above, update the operating system with an appropriate patch before the migration or perform\ndata only migrations for such VMs.\nMove Components in various Migration Paths\nThe Move components are used in the following ways during various types of migration:\n•VMware ESXi to Nutanix AHV\nWhen you are moving VMs from ESXi to AHV, Nutanix Move directly communicates with vCenter\n(vCenter is the management interface for the VMs running on the ESXi hypervisor) through the\nManagement Server and the Source Agent. VMware Tools should be installed on the source VMs. The\nSource Agent collects information from the VMware library about the VMs being migrated.\n•VMware ESXi on legacy infrastructure to VMware ESXi on Nutanix\nWhen you are moving VMs from VMware ESXi on legacy infrastructure to VMware ESXi on Nutanix,\nNutanix Move directly communicates with Prism (management interface for the VMs running on AOS)\nthrough the Management Server and the Source Agent.\nMove  |  Move Overview  | 9\n\nAHV runs an embedded distributed network controller that integrates user VM networking with AWS networking.\nInstead of creating an overlay network, NC2 on AWS  integrates IP address management with AWS Virtual Private\nCloud (VPC). AWS allocates all user VM IP addresses from the AWS subnets in the existing VPCs. Native\nintegration with AWS networking allows you to seamlessly use AWS services on AHV user VMs without a complex\nnetwork deployment or performance loss.\nAOS can withstand hardware failures and software glitches and ensures that application availability and performance\nare managed as per the configured resilience. Combining features such as native rack awareness with AWS partition\nplacement groups allows Nutanix to operate freely in a dynamic cloud environment.\nIn addition to the traditional resilience solutions for Prism Central, NC2 on AWS  also provides the Cluster Protect\nfeature that helps to protect Prism Central. UVM, and volume groups data in case of full cluster failures caused by\nscenarios, such as Availability Zones (AZs) failures or users shutting down all nodes from the AWS console. For\ndetails, see Cluster Protect Configuration .\nNC2 on AWS  provides on-prem workloads, a home in the cloud, offering native access to available AWS services\nwithout requiring you to reconfigure your software.\nYou use the NC2 console to deploy a cluster in a VPC in AWS. After you launch a Nutanix cluster in AWS by using\nNC2, you can operate the cluster in the same manner as you operate your on-prem Nutanix cluster with no change in\nnCLI, the Prism Element and Prism Central web console, and APIs. You use the NC2 console to create, hibernate,\nresume, update, and delete your Nutanix cluster.\nFigure 2: Overview of NC2 on AWS\nFollowing are the key points about NC2 on AWS :\n•Runs on the EC2 bare-metal instances. For more information on the supported EC2 bare-metal instances, see\nSupported Regions and Bare-metal Instances .\nCloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 9\n\nFigure 7: NC2 on AWS  Architecture\nThis enables our MapReduce Framework (Curator) to use the full power of the cluster to perform activities\nconcurrently. For example, activities such as data reprotection, compression, erasure coding, deduplication, and more.\nFigure 8: Cluster Deployment in a VPC\n Preventing Network Partition Errors\nAOS Storage  uses the Paxos algorithm to avoid split-brain scenarios. Paxos is a proven protocol for reaching\nconsensus or quorum among several participants in a distributed system.\nBefore any file system metadata is written to Cassandra, Paxos ensures that all nodes in the system agree on the\nvalue. If the nodes do not reach a quorum, the operation fails in order to prevent any potential corruption or data\ninconsistency. This design protects against events such as network partitioning, where communication between nodes\nmay fail or packets may become corrupt, leading to a scenario where nodes disagree on values. AOS Storage  also\nuses time stamps to ensure that updates are applied in the proper order.\n Resolving Bad Disk Resources\nAOS Storage  incorporates a Curator process that performs background housekeeping tasks to keep the entire cluster\nrunning smoothly.\nCloud Clusters (NC2) |  Nutanix Cloud Clusters  (NC2) Overview  | 18\n\nQuestion: What is Microservice Platform ?\nHelpful Answer: Based on my understanding of the provided text, it seems that \"Microservice Platform\" refers to the Nutanix Cloud Clusters (NC2) overview document. According to the document, NC2 offers a hybrid multicloud platform that allows organizations to extend their on-premises data centers into public clouds, providing a unified management console for managing applications across different environments. It appears that NC2 includes a microservices platform that enables developers to build, deploy, and manage microservices applications in a consistent manner across different environments. However, I cannot confirm this interpretation without further context or clarification."]}]}
+2024-02-19 09:04:35,425 [INFO] Query processed: What is Microservice Platform ?
+2024-02-19 10:14:35,073 [INFO] Load pretrained SentenceTransformer: sentence-transformers/all-mpnet-base-v2
+2024-02-19 10:14:41,829 [DEBUG] Created new connection using: 64046aadb5eb4d6e8fc51d4cd97be08b
+2024-02-19 10:14:50,980 [INFO] User input received: What is Microservice Platform ?
+2024-02-19 10:14:52,425 [DEBUG] Calculating Tokens...
+2024-02-19 10:14:52,430 [DEBUG] Number of tokens in request: 434
+2024-02-19 10:14:52,430 [DEBUG] Sending request to http://llm.llm.gpt01dev01.cloudnative.nvdlab.net/v2/models/llama2_7b_chat/infer with prompt: Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+
+Microservices Infrastructure » Download this section as PDF (opens in a new tab/window)Microservices Infrastructure (MSP) provides a common framework for delivering microservices associated with Prism Central-based components such as Flow Virtual Networking, Objects, and the Security Dashboard. MSP also provides services such as Identity and Access
+
+and resource management, provisioning, and operations.  Its goal is to abstract the facilitating resource (e.g., hypervisor, on-premises, cloud, etc.) from the workloads running, while providing a single “platform” to operate. This gives workloads the ability to seamlessly move between hypervisors, cloud providers, and platforms.                          Note
+
+services / features will spawn additional helper VMs or use the Microservices Platform (MSP). For example, Nutanix Files will deploy additional VMs, whereas Nutanix Objects will deploy VMs for MSP and leverage those.For the Nutanix units running VMware vSphere, the SCSI controller, which manages the SSD and HDD devices, is directly passed to the CVM leveraging VM-Direct Path
+
+Salesforce.com, Google search, etc.Platform as a Service (PaaS)    Development and deployment platformExamples: Amazon Elastic Beanstalk / Relational Database Services (RDS), Google App Engine, etc.Infrastructure as a Service (IaaS)    VMs/Containers/NFV as a serviceExamples: Amazon EC2/ECS, Microsoft Azure, Google Compute Engine (GCE), etc.                          Shift in IT
+
+Question: What is Microservice Platform ?
+Helpful Answer:
+2024-02-19 10:14:52,432 [DEBUG] Starting new HTTP connection (1): llm.llm.gpt01dev01.cloudnative.nvdlab.net:80
+2024-02-19 10:14:59,654 [DEBUG] http://llm.llm.gpt01dev01.cloudnative.nvdlab.net:80 "POST /v2/models/llama2_7b_chat/infer HTTP/1.1" 200 2362
+2024-02-19 10:14:59,658 [DEBUG] Response received: {"model_name":"llama2_7b_chat","model_version":null,"id":"1","parameters":null,"outputs":[{"name":"predict","shape":[-1],"datatype":"BYTES","parameters":null,"data":["Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.\n\nMicroservices Infrastructure » Download this section as PDF (opens in a new tab/window)Microservices Infrastructure (MSP) provides a common framework for delivering microservices associated with Prism Central-based components such as Flow Virtual Networking, Objects, and the Security Dashboard. MSP also provides services such as Identity and Access\n\nand resource management, provisioning, and operations.  Its goal is to abstract the facilitating resource (e.g., hypervisor, on-premises, cloud, etc.) from the workloads running, while providing a single “platform” to operate. This gives workloads the ability to seamlessly move between hypervisors, cloud providers, and platforms.                          Note\n\nservices / features will spawn additional helper VMs or use the Microservices Platform (MSP). For example, Nutanix Files will deploy additional VMs, whereas Nutanix Objects will deploy VMs for MSP and leverage those.For the Nutanix units running VMware vSphere, the SCSI controller, which manages the SSD and HDD devices, is directly passed to the CVM leveraging VM-Direct Path\n\nSalesforce.com, Google search, etc.Platform as a Service (PaaS)    Development and deployment platformExamples: Amazon Elastic Beanstalk / Relational Database Services (RDS), Google App Engine, etc.Infrastructure as a Service (IaaS)    VMs/Containers/NFV as a serviceExamples: Amazon EC2/ECS, Microsoft Azure, Google Compute Engine (GCE), etc.                          Shift in IT\n\nQuestion: What is Microservice Platform ?\nHelpful Answer: A microservice platform (MSP) is a software architecture pattern used in developing modern applications. It allows different teams to develop and release small independent services that can be easily integrated into a larger application through APIs or messaging queues. The benefits of using a microservice platform include increased scalability, faster development cycles, improved fault tolerance, and reduced complexity compared to traditional monolithic architectures."]}]}
+2024-02-19 10:14:59,675 [INFO] Query processed: What is Microservice Platform ?
+2024-02-19 10:15:23,869 [INFO] User input received: What is MSP ?
+2024-02-19 10:15:24,708 [DEBUG] Calculating Tokens...
+2024-02-19 10:15:24,710 [DEBUG] Number of tokens in request: 411
+2024-02-19 10:15:24,710 [DEBUG] Sending request to http://llm.llm.gpt01dev01.cloudnative.nvdlab.net/v2/models/llama2_7b_chat/infer with prompt: Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+
+Objects, and the Security Dashboard. MSP also provides services such as Identity and Access Management and internal service load balancing.Before MSP, Prism Central was a monolithic application. With MSP enabled, certain services are migrated and spun up in a Kubernetes (K8s) cluster as pods. Over time, most of the Prism Central services will be migrated and converted to
+
+for the full list of prerequisites and considerations.                          Network Configuration When MSP is enabled, a Kubernetes cluster is created on Prism Central. This Kubernetes cluster is one node with a standalone Prism Central and three nodes with a scale-out Prism Central.MSP uses the following subnets.SubnetPurpose10.100.0.0/16Reserved for K8s pod
+
+Microservices Infrastructure » Download this section as PDF (opens in a new tab/window)Microservices Infrastructure (MSP) provides a common framework for delivering microservices associated with Prism Central-based components such as Flow Virtual Networking, Objects, and the Security Dashboard. MSP also provides services such as Identity and Access
+
+the first core services to do so.Nutanix MSP provides a common framework and services to deploy the Objects component's associated containers and platform services like Identity and Access Management (IAM) and Load Balancing (LB).                          Key terms The following key terms are used throughout this section and defined in the following:Bucket    An organization unit
+
+Question: What is MSP ?
+Helpful Answer:
+2024-02-19 10:15:24,711 [DEBUG] Starting new HTTP connection (1): llm.llm.gpt01dev01.cloudnative.nvdlab.net:80
+2024-02-19 10:15:27,971 [DEBUG] http://llm.llm.gpt01dev01.cloudnative.nvdlab.net:80 "POST /v2/models/llama2_7b_chat/infer HTTP/1.1" 200 2170
+2024-02-19 10:15:27,972 [DEBUG] Response received: {"model_name":"llama2_7b_chat","model_version":null,"id":"1","parameters":null,"outputs":[{"name":"predict","shape":[-1],"datatype":"BYTES","parameters":null,"data":["Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.\n\nObjects, and the Security Dashboard. MSP also provides services such as Identity and Access Management and internal service load balancing.Before MSP, Prism Central was a monolithic application. With MSP enabled, certain services are migrated and spun up in a Kubernetes (K8s) cluster as pods. Over time, most of the Prism Central services will be migrated and converted to\n\nfor the full list of prerequisites and considerations.                          Network Configuration When MSP is enabled, a Kubernetes cluster is created on Prism Central. This Kubernetes cluster is one node with a standalone Prism Central and three nodes with a scale-out Prism Central.MSP uses the following subnets.SubnetPurpose10.100.0.0/16Reserved for K8s pod\n\nMicroservices Infrastructure » Download this section as PDF (opens in a new tab/window)Microservices Infrastructure (MSP) provides a common framework for delivering microservices associated with Prism Central-based components such as Flow Virtual Networking, Objects, and the Security Dashboard. MSP also provides services such as Identity and Access\n\nthe first core services to do so.Nutanix MSP provides a common framework and services to deploy the Objects component's associated containers and platform services like Identity and Access Management (IAM) and Load Balancing (LB).                          Key terms The following key terms are used throughout this section and defined in the following:Bucket    An organization unit\n\nQuestion: What is MSP ?\nHelpful Answer: Based on the provided text, it appears that MSP stands for \"Microservices Infrastructure\" or possibly \"Multiple Services Provider\", but without more information I cannot confirm which one it refers to. Without further clarification from the source material, I cannot accurately answer your question."]}]}
+2024-02-19 10:15:27,980 [INFO] Query processed: What is MSP ?
+2024-02-19 10:15:58,052 [INFO] User input received: What is NKE
+2024-02-19 10:15:58,978 [DEBUG] Calculating Tokens...
+2024-02-19 10:15:58,980 [DEBUG] Number of tokens in request: 449
+2024-02-19 10:15:58,980 [DEBUG] Sending request to http://llm.llm.gpt01dev01.cloudnative.nvdlab.net/v2/models/llama2_7b_chat/infer with prompt: Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+
+better storage performance for your stateful containerized applications.The Nutanix Cloud Platform provides a built-in turnkey Kubernetes experience with Nutanix Kubernetes Engine (NKE). NKE is an enterprise-grade offering that simplifies the provisioning and lifecycle management of multiple clusters. Nutanix is about customer choice, customers can run their preferred distribution
+
+Users can access the NKE console and perform certain tasks based on the assigned role.A member of the User Admin role in PC has full access to NKE and its functionalities.A member of the Cluster Admin role or Viewer role can only download kubeconfig.An NKE-enabled Kubernetes cluster out-of-the-box uses Prism Central for authentication and maps the PC role User Admin with the
+
+Nutanix HCI clusters.                          NKE Architecture NKE runs as a containerized service in Prism Central. When Kubernetes Management is enabled on a PC, two containers are provisioned under the covers: the karbon-core container and the karbon-ui container.Karbon-core is responsible for the lifecycle of Kubernetes clusters. Tasks such as provisioning, node OS upgrades,
+
+NKE instance. On the other hand, the PC roles Cluster Admin and Viewer do not have a mapping with a Kubernetes role. This means that a user member of any of these two roles can download the kubeconfig from NKE, but not perform any action at the Kubernetes level. A super-admin user will have to create the correct role mapping inside Kubernetes.                          Pro tip
+
+Question: What is NKE
+Helpful Answer:
+2024-02-19 10:15:58,981 [DEBUG] Starting new HTTP connection (1): llm.llm.gpt01dev01.cloudnative.nvdlab.net:80
+2024-02-19 10:16:01,724 [DEBUG] http://llm.llm.gpt01dev01.cloudnative.nvdlab.net:80 "POST /v2/models/llama2_7b_chat/infer HTTP/1.1" 200 2094
+2024-02-19 10:16:01,725 [DEBUG] Response received: {"model_name":"llama2_7b_chat","model_version":null,"id":"1","parameters":null,"outputs":[{"name":"predict","shape":[-1],"datatype":"BYTES","parameters":null,"data":["Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.\n\nbetter storage performance for your stateful containerized applications.The Nutanix Cloud Platform provides a built-in turnkey Kubernetes experience with Nutanix Kubernetes Engine (NKE). NKE is an enterprise-grade offering that simplifies the provisioning and lifecycle management of multiple clusters. Nutanix is about customer choice, customers can run their preferred distribution\n\nUsers can access the NKE console and perform certain tasks based on the assigned role.A member of the User Admin role in PC has full access to NKE and its functionalities.A member of the Cluster Admin role or Viewer role can only download kubeconfig.An NKE-enabled Kubernetes cluster out-of-the-box uses Prism Central for authentication and maps the PC role User Admin with the\n\nNutanix HCI clusters.                          NKE Architecture NKE runs as a containerized service in Prism Central. When Kubernetes Management is enabled on a PC, two containers are provisioned under the covers: the karbon-core container and the karbon-ui container.Karbon-core is responsible for the lifecycle of Kubernetes clusters. Tasks such as provisioning, node OS upgrades,\n\nNKE instance. On the other hand, the PC roles Cluster Admin and Viewer do not have a mapping with a Kubernetes role. This means that a user member of any of these two roles can download the kubeconfig from NKE, but not perform any action at the Kubernetes level. A super-admin user will have to create the correct role mapping inside Kubernetes.                          Pro tip\n\nQuestion: What is NKE\nHelpful Answer: NKE stands for Nutanix Kubernetes Engine. It is a platform within the Nutanix Cloud Platform that enables users to easily manage and deploy containerized workloads using Kubernetes."]}]}
+2024-02-19 10:16:01,732 [INFO] Query processed: What is NKE
+2024-02-19 10:20:36,875 [INFO] User input received: which roles provides it ?
+2024-02-19 10:20:37,879 [DEBUG] Calculating Tokens...
+2024-02-19 10:20:37,883 [DEBUG] Number of tokens in request: 466
+2024-02-19 10:20:37,883 [DEBUG] Sending request to http://llm.llm.gpt01dev01.cloudnative.nvdlab.net/v2/models/llama2_7b_chat/infer with prompt: Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+
+mapping of the roles:Guest Tools Service                          Guest Agent The Guest Agent is composed of the following high-level components as mentioned prior:Guest Agent                          Communication and Security The Guest Agent Service communicates with the Guest Tools Service via a serial port connection from VM to the CVM. If the service is unable to reach the
+
+installation process. Handles any local functions such as VSS and Self-service Restore (SSR) and interacts with the Guest Tools Service.The following figure shows the high-level mapping of the components:Guest Tools Mapping                          Guest Tools Service The Guest Tools Service is composed of two main roles:NGT Leader    Handles requests coming from NGT Proxy and
+
+and resource management, provisioning, and operations.  Its goal is to abstract the facilitating resource (e.g., hypervisor, on-premises, cloud, etc.) from the workloads running, while providing a single “platform” to operate. This gives workloads the ability to seamlessly move between hypervisors, cloud providers, and platforms.                          Note
+
+hosts, disks, GPU)Activity    Environment wide alerts, events and tasksOperations    Operations dashboards, reporting and actions (X-Play)Administration    Environment construct management (e.g. users, groups, roles, availability zones)Services    Add-on service management (e.g. Calm, Karbon)Settings    Prism Central configurationTo access the menu click on the hamburger
+
+Question: which roles provides it ?
+Helpful Answer:
+2024-02-19 10:20:37,884 [DEBUG] Starting new HTTP connection (1): llm.llm.gpt01dev01.cloudnative.nvdlab.net:80
+2024-02-19 10:20:40,431 [DEBUG] http://llm.llm.gpt01dev01.cloudnative.nvdlab.net:80 "POST /v2/models/llama2_7b_chat/infer HTTP/1.1" 200 2102
+2024-02-19 10:20:40,433 [DEBUG] Response received: {"model_name":"llama2_7b_chat","model_version":null,"id":"1","parameters":null,"outputs":[{"name":"predict","shape":[-1],"datatype":"BYTES","parameters":null,"data":["Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.\n\nmapping of the roles:Guest Tools Service                          Guest Agent The Guest Agent is composed of the following high-level components as mentioned prior:Guest Agent                          Communication and Security The Guest Agent Service communicates with the Guest Tools Service via a serial port connection from VM to the CVM. If the service is unable to reach the\n\ninstallation process. Handles any local functions such as VSS and Self-service Restore (SSR) and interacts with the Guest Tools Service.The following figure shows the high-level mapping of the components:Guest Tools Mapping                          Guest Tools Service The Guest Tools Service is composed of two main roles:NGT Leader    Handles requests coming from NGT Proxy and\n\nand resource management, provisioning, and operations.  Its goal is to abstract the facilitating resource (e.g., hypervisor, on-premises, cloud, etc.) from the workloads running, while providing a single “platform” to operate. This gives workloads the ability to seamlessly move between hypervisors, cloud providers, and platforms.                          Note\n\nhosts, disks, GPU)Activity    Environment wide alerts, events and tasksOperations    Operations dashboards, reporting and actions (X-Play)Administration    Environment construct management (e.g. users, groups, roles, availability zones)Services    Add-on service management (e.g. Calm, Karbon)Settings    Prism Central configurationTo access the menu click on the hamburger\n\nQuestion: which roles provides it ?\nHelpful Answer: Based on the provided information, we can see that the Guest Tools Service has two main roles: NGT Leader and Activity. Therefore, the role that provides these services is the Guest Tools Service."]}]}
+2024-02-19 10:20:40,449 [INFO] Query processed: which roles provides it ?
