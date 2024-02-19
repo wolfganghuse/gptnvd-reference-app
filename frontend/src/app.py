@@ -37,7 +37,7 @@ embeddings = HuggingFaceBgeEmbeddings(
 vectorstore = Milvus(
     embeddings,
     collection_name = MILVUS_COLLECTION,
-    connection_args={"host": "milvus.gpt01mgmt01.cloudnative.nvdlab.net", "port": "19530"},
+    connection_args={"host": MILVUS_HOST, "port": MILVUS_PORT},
 )
 
 def load_model():
