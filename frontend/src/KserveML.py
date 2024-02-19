@@ -3,8 +3,6 @@ import logging
 
 import requests
 
-from transformers import GPT2Tokenizer
-
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.llms.base import LLM
 from langchain.llms.utils import enforce_stop_tokens
@@ -22,9 +20,6 @@ class KserveML(LLM):
             )
             kserve_llm = KserveML(endpoint_url=endpoint_url)
     """
-
-    # Initialize a tokenizer (use the appropriate one for your LLM)
-    tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
 
     endpoint_url: str = (
         "https://models.hosted-on.kserve.hosting/mpt-7b-instruct/v1/predict"
@@ -78,13 +73,6 @@ class KserveML(LLM):
 
                 response = kserve_llm("Tell me a joke.")
         """
-        # Tokenize the input and count the tokens
-        logging.debug(f"Calculating Tokens...")
-        tokenized_input = self.tokenizer.encode(prompt, add_special_tokens=False)
-        num_tokens = len(tokenized_input)
-
-        # Log the number of tokens
-        logging.debug(f"Number of tokens in request: {num_tokens}")
 
         _model_kwargs = self.model_kwargs or {}
 

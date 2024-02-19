@@ -2,17 +2,15 @@
 # https://docs.chainlit.io/integrations/langchain
 import os
 from langchain import hub
-#from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
-#from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Milvus
-from langchain_community.llms import Ollama
-from langchain.callbacks.manager import CallbackManager
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+#from langchain.callbacks.manager import CallbackManager
+#from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 import chainlit as cl
 from langchain.chains import RetrievalQA
 from torch import cuda
 from config import *
+from KserveML import KserveML
 
 
 ABS_PATH: str = os.path.dirname(os.path.abspath(__file__))
@@ -20,7 +18,7 @@ DB_DIR: str = os.path.join(ABS_PATH, "db")
 
 
 # Set up RetrievelQA model
-rag_prompt_mistral = hub.pull("rlm/rag-prompt-mistral")
+rag_prompt_mistral = hub.pull("rlm/rag-prompt")
 
 device = f'cuda' if cuda.is_available() else 'cpu'
 
