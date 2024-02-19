@@ -1,14 +1,35 @@
-# Welcome to Chainlit! 🚀🤖
+Reference Application on GPT-in-a-Box for Nutanix (0.1)
+=========================================
+                 
+Infrastructure
+--------------
+- Nutanix NX with GPU
+- AOS 6.7
+- PC2023.4
+- Files
+- Objects
 
-Hi there, Developer! 👋 We're excited to have you on board. Chainlit is a powerful tool designed to help you prototype, debug and share applications built on top of LLMs.
+Kubernetes Infrastructure
+-------------------------
+- NKE 2.9
+- Kubernetes 1.25.6
+- MetalLB
+- GPU-enabled Worker Node Pool
+- NAI-LLM-k8s with Helm Chart
+- Jupyter Lab for Experiments
+- Milvus Vectorstore
 
-## Useful Links 🔗
+Application Architecture
+========================
 
-- **Documentation:** Get started with our comprehensive [Chainlit Documentation](https://docs.chainlit.io) 📚
-- **Discord Community:** Join our friendly [Chainlit Discord](https://discord.gg/k73SQ3FyUh) to ask questions, share your projects, and connect with other developers! 💬
+Overview:
+---------
+- Llama2 based RAG Pipeline for domain-specific knowledge
 
-We can't wait to see what you create with Chainlit! Happy coding! 💻😊
 
-## Welcome screen
-
-To modify the welcome screen, edit the `chainlit.md` file at the root of your project. If you do not want a welcome screen, just leave this file empty.
+Details:
+--------
+- Llama2 7B Large Language Model running on kserve inference service
+- BGE-large-en-v1.5 embedding model
+- RAG-pipeline using Milvus Vectorstore 
+- Chainlit-based Frontend

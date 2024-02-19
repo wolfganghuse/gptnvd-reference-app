@@ -1,16 +1,10 @@
-# streamlit==1.27.2
-# streamlit-chat==0.1.1
-# langchain==0.0.319
-# pymilvus==2.3.1
-# sentence-transformers==2.2.2
-# langchainhub==0.1.13
-# redis==5.0.1
-# prometheus_client
-chainlit
-langchain
-langchain_community
-PyPDF2
-pypdf
-pymilvus
-langchainhub
-torch
+prometheus_client==0.20.0
+chainlit==1.0.200
+langchain==0.1.7
+langchain-community==0.0.20
+pypdf==4.0.2
+PyPDF2==3.0.1
+pymilvus==2.3.1
+langchainhub==0.1.14
+torch==2.2.0
+sentence-transformers==2.2.2

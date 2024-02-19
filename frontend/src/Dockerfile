@@ -17,4 +17,4 @@ ENV SENTENCE_TRANSFORMERS_HOME /app/model
 
 EXPOSE 8501
  
-ENTRYPOINT [ "streamlit","run","app.py" ]
+ENTRYPOINT [ "chainlit","run","app.py" ]
