@@ -11,6 +11,11 @@ from langchain.chains import RetrievalQA
 from torch import cuda
 from config import *
 from KserveML import KserveML
+from langchain.chains import (
+    ConversationalRetrievalChain,
+)
+from langchain.memory import ChatMessageHistory, ConversationBufferMemory
+
 
 
 ABS_PATH: str = os.path.dirname(os.path.abspath(__file__))
@@ -39,6 +44,17 @@ vectorstore = Milvus(
     connection_args={"host": MILVUS_HOST, "port": MILVUS_PORT},
 )
 
+message_history = ChatMessageHistory()
+
+memory = ConversationBufferMemory(
+    memory_key="chat_history",
+    output_key="answer",
+    chat_memory=message_history,
+    return_messages=True,
+)
+
+    # Create a chain that uses the Chroma vector store
+ 
 def load_model():
     #"http://llama2chat.llm1.kubeflow4.gptnvd.dachlab.net/v2/models/llama2chat_7b/infer"
     llm = KserveML(
@@ -48,21 +64,17 @@ def load_model():
     return llm
 
 
-def retrieval_qa_chain(llm, vectorstore):
-
-    qa_chain = RetrievalQA.from_chain_type(
-        llm,
-        retriever=vectorstore.as_retriever(),
-        chain_type_kwargs={"prompt": rag_prompt_mistral},
-        return_source_documents=True,
-    )
-    return qa_chain
 
 
 def qa_bot():
     llm = load_model()
 
-    qa = retrieval_qa_chain(llm, vectorstore)
+    qa = ConversationalRetrievalChain.from_llm(
+        llm,
+        chain_type="stuff",
+        retriever=vectorstore.as_retriever(),
+        memory=memory,
+        return_source_documents=True)
     return qa
 
 
@@ -94,7 +106,7 @@ async def main(message):
     cb = cl.AsyncLangchainCallbackHandler()
     cb.answer_reached = True
     res = await chain.acall(message.content, callbacks=[cb])
-    answer = res["result"]
+    answer = res["answer"]
     source_documents = res["source_documents"]
 
     text_elements = []  # type: List[cl.Text]
