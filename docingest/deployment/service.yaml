@@ -4,9 +4,19 @@ metadata:
   name: doc-ingest
 spec:
   template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/min-scale: "1"
     spec:
       containers:
-      - image: quay.io/wolfgangntnx/doc-ingest:0.0.1
-        env:
+      - env:
         - name: MILVUS_HOST
-          value: "milvus.gpt01mgmt01.cloudnative.nvdlab.net"
+          value: milvus.gpt01mgmt01.cloudnative.nvdlab.net
+        - name: AWS_S3_ENDPOINT_URL
+          value: https://objects.gptnvd.cloudnative.nvdlab.net
+        - name: MILVUS_COLLECTION
+          value: document02
+        image: quay.io/wolfgangntnx/doc-ingest:0.2.2
+        resources:
+          limits:
+            nvidia.com/gpu: "1"

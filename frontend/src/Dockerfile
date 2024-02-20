@@ -15,6 +15,6 @@ USER 1001
 ENV TRANSFORMERS_CACHE /app/model 
 ENV SENTENCE_TRANSFORMERS_HOME /app/model
 
-EXPOSE 8501
+EXPOSE 8000
  
-ENTRYPOINT [ "chainlit","run","app.py" ]
+ENTRYPOINT ["chainlit", "run", "app.py", "--host=0.0.0.0", "--port=8000", "--headless"]

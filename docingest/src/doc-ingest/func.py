@@ -2,17 +2,20 @@ from parliament import Context
 from cloudevents.conversion import to_json
 from config import *
 
-from langchain.document_loaders import WebBaseLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import Milvus
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Milvus
+from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+from langchain_community.document_loaders import PyPDFLoader
 
 from prometheus_client import Counter, Histogram, start_http_server
 
 import logging
-from datetime import datetime
+from torch import cuda
 
 import boto3
+
+
+
 
 REQUESTS = Counter(
     'doc_ingest_requests_total', 
@@ -33,17 +36,27 @@ S3_LATENCY = Histogram(
     'Latency of s3 retrieval in seconds'
 )
 
-MILVUS_LATENCY = Histogram(
-    'doc_ingest_milvus_request_latency_seconds', 
-    'Latency of Milvus requests in seconds'
-)
+# Start a Prometheus metrics server on port 8001
+start_http_server(8001)
 
 FORMAT = f'%(asctime)s %(id)-36s {FUNC_NAME} %(message)s'
 logging.basicConfig(format=FORMAT)
 
 logger = logging.getLogger('boto3')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
+device = f'cuda' if cuda.is_available() else 'cpu'
+
+#modelPath = "sentence-transformers/all-mpnet-base-v2"
+modelPath = "BAAI/bge-large-en-v1.5"
+model_kwargs = {'device': device}
+encode_kwargs = {'normalize_embeddings': True}
+
+embeddings = HuggingFaceBgeEmbeddings(
+    model_name=modelPath,     # Provide the pre-trained model's path
+    model_kwargs=model_kwargs, # Pass the model configuration options
+    encode_kwargs=encode_kwargs # Pass the encoding options
+)
 
 def s3_client():
 
@@ -69,49 +82,49 @@ def get_signed_url(bucket, obj):
 
 def main(context: Context):
 
-    source_attributes = context.cloud_event.get_attributes()
+    with TOTAL_LATENCY.time():
 
-    logger.info(
-        f'REQUEST:: {to_json(context.cloud_event)}', extra=source_attributes)
+        REQUESTS.inc()
 
-    data = context.cloud_event.data
-    notificationType = data["Records"][0]["eventName"]
-    if notificationType == "s3:ObjectCreated:Put":
-        srcBucket = data["Records"][0]["s3"]["bucket"]["name"]
-        srcObj = data["Records"][0]["s3"]["object"]["key"]
-        signed_url = get_signed_url(
-            srcBucket, srcObj)
-        logger.info(f'SIGNED URL:: {signed_url}', extra=source_attributes)
+        source_attributes = context.cloud_event.get_attributes()
 
-        modelPath = "sentence-transformers/all-mpnet-base-v2"
-        model_kwargs = {'device':'cpu'}
-        encode_kwargs = {'normalize_embeddings': False}
-        embeddings = HuggingFaceEmbeddings(
-            model_name=modelPath,
-            cache_folder='/app/model',
-            model_kwargs=model_kwargs, 
-            encode_kwargs=encode_kwargs 
-        )
+        logger.info(
+            f'REQUEST:: {to_json(context.cloud_event)}', extra=source_attributes)
 
-        loader = WebBaseLoader(signed_url)
+        data = context.cloud_event.data
+        notificationType = data["Records"][0]["eventName"]
+        if notificationType == "s3:ObjectCreated:Put":
+            srcBucket = data["Records"][0]["s3"]["bucket"]["name"]
+            srcObj = data["Records"][0]["s3"]["object"]["key"]
+            with S3_LATENCY.time():
+                signed_url = get_signed_url(
+                    srcBucket, srcObj)
+                logger.info(f'SIGNED URL:: {signed_url}', extra=source_attributes)
 
-        docs = loader.load()
+                try:
+                    loader = PyPDFLoader(signed_url)
+                except:
+                    logger.info(f'URL not found:: {signed_url}', extra=source_attributes)
+        
+                docs = loader.load()
 
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=250)
-        splitted_docs = text_splitter.split_documents(docs)
+            # Split loaded documents into chunks
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=40)
+            chunked_documents = text_splitter.split_documents(docs)
 
-        MILVUS_HOST = os.environ['MILVUS_HOST']
+            MILVUS_HOST = os.environ['MILVUS_HOST']
 
-        vector_db = Milvus.from_documents(
-            splitted_docs,
-            embeddings,
-            collection_name = 'doc_ingest',
-            connection_args={"host": MILVUS_HOST, "port": MILVUS_PORT},
-        )
-        logger.info(f'Successfully embedded:: {notificationType}', extra=source_attributes)
+            with EMBED_LATENCY.time():
+                vector_db = Milvus.from_documents(
+                    chunked_documents,
+                    embeddings,
+                    collection_name = MILVUS_COLLECTION,
+                    connection_args={"host": MILVUS_HOST, "port": MILVUS_PORT},
+                )
+                logger.info(f'Successfully embedded:: {notificationType}', extra=source_attributes)
 
-    else:
-        logger.info(f'Not processing:: {notificationType}', extra=source_attributes)
+        else:
+            logger.info(f'Not processing:: {notificationType}', extra=source_attributes)
 
 
-    return "", 204
+        return "", 204

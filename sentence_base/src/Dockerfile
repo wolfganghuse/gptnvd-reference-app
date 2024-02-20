@@ -16,6 +16,6 @@ ENV TRANSFORMERS_CACHE /app/model
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/all-mpnet-base-v2', cache_folder='/app/model')"
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-large-en-v1.5', cache_folder='/app/model')"
 
 RUN python -c "import transformers; transformers.utils.move_cache()"
