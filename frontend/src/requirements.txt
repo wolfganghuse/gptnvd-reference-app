@@ -1,0 +1,10 @@
+prometheus_client==0.20.0
+chainlit==1.0.200
+langchain==0.1.7
+langchain-community==0.0.20
+pypdf==4.0.2
+PyPDF2==3.0.1
+pymilvus==2.3.1
+langchainhub==0.1.14
+torch==2.2.0
+sentence-transformers==2.2.2

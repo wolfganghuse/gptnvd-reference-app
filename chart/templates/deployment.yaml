@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: quay.io/wolfgangntnx/frontend:latest
+        env:
+        - name: MILVUS_HOST
+          value: "milvus.gpt01mgmt01.cloudnative.nvdlab.net"
+        - name: MILVUS_PORT
+          value: "19530"
+        - name: MILVUS_COLLECTION
+          value: "collection01"
+        - name: INFERENCE_ENDPOINT
+          value: "http://llm.llm.gpt01dev01.cloudnative.nvdlab.net/v2/models/llama2_7b_chat/infer"
+        - name: REDIS_URL
+          value: "redis-master.redis:6379"
+        - name: REDIS_PASSWORD
+          value: "xtOygnkYIS"
+        resources:
+          requests:
+            memory: "3Gi"
+            cpu: "1"
+          # limits:
+          #   memory: "256Mi"
+          #   cpu: "500m"

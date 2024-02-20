@@ -1,0 +1,11 @@
+parliament-functions==0.1.0
+boto3==1.26.16
+langchain==0.1.7
+langchain-community==0.0.20
+pymilvus==2.3.1
+bs4==0.0.1
+sentence-transformers==2.2.2
+prometheus_client==0.20.0
+langchainhub==0.1.14
+torch==2.2.0
+pypdf==4.0.2

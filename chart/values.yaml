@@ -1,0 +1,8 @@
+milvus:
+  host: milvus.milvus
+  port: 19530
+redis:
+  url: redis://redis-master.redis:6379
+image:
+inference:
+  endpoint: http://llm.llm/v2/models/gpt2/infer
