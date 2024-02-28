@@ -12,6 +12,9 @@ from torch import cuda
 from config import *
 from KserveML import KserveML
 
+import boto3
+from botocore.exceptions import NoCredentialsError
+
 
 ABS_PATH: str = os.path.dirname(os.path.abspath(__file__))
 DB_DIR: str = os.path.join(ABS_PATH, "db")
@@ -38,6 +41,15 @@ vectorstore = Milvus(
     collection_name = MILVUS_COLLECTION,
     connection_args={"host": MILVUS_HOST, "port": MILVUS_PORT},
 )
+
+
+# Initialize S3 client
+s3 = boto3.client('s3',
+        endpoint_url=S3_ENDPOINT_URL,
+        aws_access_key_id=ACCESS_KEY,
+        aws_secret_access_key=SECRET_KEY,
+        region_name=S3_REGION,
+        verify=SSL_VERIFY)
 
 def load_model():
     #"http://llama2chat.llm1.kubeflow4.gptnvd.dachlab.net/v2/models/llama2chat_7b/infer"
@@ -66,6 +78,17 @@ def qa_bot():
     return qa
 
 
+def upload_file_to_s3(file):
+    try:
+        with open(file.path, "rb") as f:
+            s3.upload_fileobj(f, BUCKET_NAME, file.name)
+        return f"Upload Successful: {file.name}"
+    except FileNotFoundError:
+        return "The file was not found"
+    except NoCredentialsError:
+        return "Credentials not available"
+    
+
 @cl.on_chat_start
 async def start():
     """
@@ -77,8 +100,11 @@ async def start():
     chain = qa_bot()
     welcome_message = cl.Message(content="Starting the bot...")
     await welcome_message.send()
-    welcome_message.content = (
-        "Hi, Welcome to GPT Reference App build with Chainlit and LangChain."
+    welcome_message.content = ("""
+                               Hi, Welcome to GPT Reference App build with Chainlit and LangChain.
+                               Feel free to ask questions about the documents currently stored in the config S3 Bucket.
+                               You can also use the upload button to add new documents to the bucket. 
+                               Be aware not to share sensitive documents and expect some seconds for embedding the data before start asking questions."""
     )
     await welcome_message.update()
     cl.user_session.set("chain", chain)
@@ -90,6 +116,14 @@ async def main(message):
     Processes incoming chat messages.
 
     """
+    if  message.elements:
+        documents = [file for file in message.elements if "pdf" in file.mime]
+        if len(documents)==1:
+            result = upload_file_to_s3(documents[0])
+            await cl.Message(content=result).send()
+        else:
+            await cl.Message(content="Currrently i can only handle PDF documents.").send()
+        return
     chain = cl.user_session.get("chain")
     cb = cl.AsyncLangchainCallbackHandler()
     cb.answer_reached = True

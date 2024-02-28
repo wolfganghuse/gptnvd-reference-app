@@ -62,10 +62,10 @@ def s3_client():
 
     session = boto3.Session()
     return session.client('s3',
-                          endpoint_url=AWS_S3_ENDPOINT_URL,
-                          aws_access_key_id=AWS_ACCESS_KEY_ID,
-                          aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                          region_name=AWS_REGION,
+                          endpoint_url=S3_ENDPOINT_URL,
+                          aws_access_key_id=ACCESS_KEY,
+                          aws_secret_access_key=SECRET_KEY,
+                          region_name=S3_REGION,
                           verify=SSL_VERIFY)
 
 
