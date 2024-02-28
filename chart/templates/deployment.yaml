@@ -1,37 +1,95 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
+  name: {{ include "gpt-sample-app.fullname" . }}
+  labels:
+    {{- include "gpt-sample-app.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: frontend
+      {{- include "gpt-sample-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
-        app: frontend
+        {{- include "gpt-sample-app.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "gpt-sample-app.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-      - name: frontend
-        image: quay.io/wolfgangntnx/frontend:latest
-        env:
-        - name: MILVUS_HOST
-          value: "milvus.gpt01mgmt01.cloudnative.nvdlab.net"
-        - name: MILVUS_PORT
-          value: "19530"
-        - name: MILVUS_COLLECTION
-          value: "collection01"
-        - name: INFERENCE_ENDPOINT
-          value: "http://llm.llm.gpt01dev01.cloudnative.nvdlab.net/v2/models/llama2_7b_chat/infer"
-        - name: REDIS_URL
-          value: "redis-master.redis:6379"
-        - name: REDIS_PASSWORD
-          value: "xtOygnkYIS"
-        resources:
-          requests:
-            memory: "3Gi"
-            cpu: "1"
-          # limits:
-          #   memory: "256Mi"
-          #   cpu: "500m"
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: "MILVUS_HOST"
+              value: {{ .Values.milvus.host }}
+            - name: "MILVUS_PORT"
+              value: {{ .Values.milvus.port }}
+            - name: "MILVUS_COLLECTION"
+              value: {{ .Values.milvus.collection }}
+            - name: "INFERENCE_ENDPOINT"
+              value: {{ .Values.inference.endpoint }}
+            - name: "SSL_VERIFY"
+              value: {{ .Values.s3.sslVerify }}
+            - name: "S3_REGION"
+              value: {{ .Values.s3.region }}
+            - name: "ACCESS_KEY"
+              value: {{ .Values.s3.accessKey }}
+            - name: "SECRET_KEY"
+              value: {{ .Values.s3.secretKey }}
+            - name: "S3_ENDPOINT_URL"
+              value: {{ .Values.s3.endpoint }}
+            - name: "BUCKET_NAME"
+              value: {{ .Values.s3.bucket }}
+          {{- range .Values.env }}
+            - name: {{ .name | quote }}
+              value: {{ .value | quote }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
