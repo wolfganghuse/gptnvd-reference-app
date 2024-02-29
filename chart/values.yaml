@@ -1,5 +1,5 @@
 frontend:
-  enabled: true
+  enabled: false
   replicaCount: 1
 
   image:
@@ -67,7 +67,6 @@ frontend:
         - frontend.gpt01dev01.cloudnative.nvdlab.net
 backend:
   enabled: true
-  replicaCount: 1
 
   image:
     repository: "quay.io/wolfgangntnx/doc-ingest"
@@ -84,35 +83,9 @@ backend:
   nameOverride: wh1
   fullnameOverride: ""
 
-  serviceAccount:
-    # Specifies whether a service account should be created
-    create: true
-    # Automatically mount a ServiceAccount's API credentials?
-    automount: true
-    # Annotations to add to the service account
-    annotations: {}
-    # The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
-
-  resources: {}
-    # requests:
-    #   memory: "3Gi"
-    #   cpu: "1"
-
-  podAnnotations: {}
-  podLabels: {}
-
-  podSecurityContext: {}
-    # fsGroup: 2000
-
-  securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+  resources:
+    limits:
+      nvidia.com/gpu: "1"
 
 milvus:
   host: 
@@ -127,3 +100,6 @@ s3:
   accessKey:
   secretKey:
   bucket: 
+kafka:
+  bootstrap:
+  externalPort:

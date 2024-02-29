@@ -2,16 +2,18 @@
 apiVersion: sources.knative.dev/v1beta1
 kind: KafkaSource
 metadata:
-  name: kafka-source
+  name: {{ include "gpt-sample-app.fullname" . }}
+  labels:
+    {{- include "gpt-sample-app.labels" . | nindent 4 }}
 spec:
   consumerGroup: knative-group
   bootstrapServers:
-  - kafka.gpt01mgmt01.cloudnative.nvdlab.net:9096 # note the kafka namespace
+  - {{ .Values.kafka.bootstrap }}:{{ .Values.kafka.externalPort }}
   topics:
   - OSSEvents
   sink:
     ref:
       apiVersion: serving.knative.dev/v1
       kind: Service
-      name: doc-ingest
+      name: {{ include "gpt-sample-app.fullname" . }}
 {{- end }}

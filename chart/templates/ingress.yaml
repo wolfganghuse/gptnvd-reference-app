@@ -1,5 +1,5 @@
 {{- if .Values.frontend.enabled -}}
-{{- if .Values.ingress.enabled -}}
+{{- if .Values.frontend.ingress.enabled -}}
 {{- $fullName := include "gpt-sample-app.fullname" . -}}
 {{- $svcPort := .Values.frontend.service.port -}}
 {{- if and .Values.frontend.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}

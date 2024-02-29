@@ -2,7 +2,9 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: doc-ingest
+  name: {{ include "gpt-sample-app.fullname" . }}
+  labels:
+    {{- include "gpt-sample-app.labels" . | nindent 4 }}
 spec:
   template:
     spec:
@@ -12,8 +14,6 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.backend.securityContext | nindent 12 }}
           image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           env:
@@ -37,7 +37,7 @@ spec:
               value: {{ .Values.s3.endpoint }}
             - name: "BUCKET_NAME"
               value: {{ .Values.s3.bucket }}
-          {{- range .Values.frontend.env }}
+          {{- range .Values.backend.env }}
             - name: {{ .name | quote }}
               value: {{ .value | quote }}
           {{- end }}
