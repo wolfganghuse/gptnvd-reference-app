@@ -1,6 +1,6 @@
 # Customize these variables
 IMAGE_NAME ?= doc-ingest
-TAG ?= 0.2.2
+TAG ?= 0.2.3
 DOCKER_REGISTRY ?= quay.io/wolfgangntnx
 CONTAINER_ENGINE ?= docker # or podman
 
