@@ -1,3 +1,4 @@
+{{- if .Values.backend.enabled -}}
 apiVersion: sources.knative.dev/v1beta1
 kind: KafkaSource
 metadata:
@@ -13,3 +14,4 @@ spec:
       apiVersion: serving.knative.dev/v1
       kind: Service
       name: doc-ingest
+{{- end }}
