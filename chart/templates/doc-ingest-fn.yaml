@@ -7,6 +7,9 @@ metadata:
     {{- include "gpt-sample-app.labels" . | nindent 4 }}
 spec:
   template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/min-scale: "1" 
     spec:
       {{- with .Values.backend.imagePullSecrets }}
       imagePullSecrets:
@@ -18,25 +21,25 @@ spec:
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           env:
             - name: "MILVUS_HOST"
-              value: {{ .Values.milvus.host }}
+              value: {{ .Values.milvus.host | quote }}
             - name: "MILVUS_PORT"
-              value: {{ .Values.milvus.port }}
+              value: {{ .Values.milvus.port | quote }}
             - name: "MILVUS_COLLECTION"
-              value: {{ .Values.milvus.collection }}
+              value: {{ .Values.milvus.collection | quote }}
             - name: "INFERENCE_ENDPOINT"
-              value: {{ .Values.inference.endpoint }}
+              value: {{ .Values.inference.endpoint | quote }}
             - name: "SSL_VERIFY"
-              value: {{ .Values.s3.sslVerify }}
+              value: {{ .Values.s3.sslVerify | quote }}
             - name: "S3_REGION"
-              value: {{ .Values.s3.region }}
+              value: {{ .Values.s3.region | quote }}
             - name: "ACCESS_KEY"
-              value: {{ .Values.s3.accessKey }}
+              value: {{ .Values.s3.accessKey | quote }}
             - name: "SECRET_KEY"
-              value: {{ .Values.s3.secretKey }}
+              value: {{ .Values.s3.secretKey | quote }}
             - name: "S3_ENDPOINT_URL"
-              value: {{ .Values.s3.endpoint }}
+              value: {{ .Values.s3.endpoint | quote }}
             - name: "BUCKET_NAME"
-              value: {{ .Values.s3.bucket }}
+              value: {{ .Values.s3.bucket | quote }}
           {{- range .Values.backend.env }}
             - name: {{ .name | quote }}
               value: {{ .value | quote }}

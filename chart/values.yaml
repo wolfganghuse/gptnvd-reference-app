@@ -1,5 +1,5 @@
 frontend:
-  enabled: false
+  enabled: true
   replicaCount: 1
 
   image:
@@ -8,7 +8,7 @@ frontend:
     # Overrides the image tag whose default is the chart appVersion.
     tag: latest
 
-  env:
+  env: {}
   # additional environment values
   #  - name: myEnv
   #    value: "abc"
@@ -74,7 +74,7 @@ backend:
     # Overrides the image tag whose default is the chart appVersion.
     tag: 0.2.2
 
-  env:
+  env: {}
   # additional environment values
   #  - name: myEnv
   #    value: "abc"
@@ -89,7 +89,7 @@ backend:
 
 milvus:
   host: 
-  port: 19530
+  port: 
   collection:
 inference:
   endpoint: 
