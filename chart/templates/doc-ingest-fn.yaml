@@ -44,4 +44,6 @@ spec:
             - name: {{ .name | quote }}
               value: {{ .value | quote }}
           {{- end }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
 {{- end }}
