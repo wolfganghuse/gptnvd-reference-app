@@ -52,9 +52,8 @@ s3 = boto3.client('s3',
         verify=SSL_VERIFY)
 
 def load_model():
-    #"http://llama2chat.llm1.kubeflow4.gptnvd.dachlab.net/v2/models/llama2chat_7b/infer"
     llm = KserveML(
-      endpoint_url=INFERENCE_ENDPOINT
+      base_url=INFERENCE_ENDPOINT
     )
 
     return llm

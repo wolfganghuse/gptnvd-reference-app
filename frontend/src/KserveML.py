@@ -1,5 +1,5 @@
+import time
 from typing import Any, List, Mapping, Optional
-import logging
 
 import requests
 
@@ -8,33 +8,86 @@ from langchain.llms.base import LLM
 from langchain.llms.utils import enforce_stop_tokens
 from langchain.pydantic_v1 import Extra
 
+
+class KserveMLError(Exception):
+    """Base exception for KserveML related errors."""
+    pass
+
+
+class KserveMLResponseError(KserveMLError):
+    """Raised when there's an issue with the response from KServe."""
+    pass
+
+
+class KserveMLRequestError(KserveMLError):
+    """Raised when there's an issue with the request to KServe."""
+    pass
+
+class KserveMLModelFetchError(KserveMLError):
+    """Raised when there's an issue fetching the default model name."""
+    pass
+
+class KserveMLEndpointError(KserveMLError):
+    """Raised when there's an issue with constructing the endpoint URL."""
+    pass
+    
 class KserveML(LLM):
+
     """KserveML LLM service.
 
     Example:
         .. code-block:: python
 
             from langchain.llms import KserveML
-            endpoint_url = (
-                "https://models.hosted-on.kserve.hosting/mpt-7b-instruct/v1/predict"
+            base_url = (
+                "https://models.hosted-on.kserve.hosting"
             )
-            kserve_llm = KserveML(endpoint_url=endpoint_url)
+            kserve_llm = KserveML(base_url=base_url)
     """
 
-    endpoint_url: str = (
-        "https://models.hosted-on.kserve.hosting/mpt-7b-instruct/v1/predict"
+    base_url: str = (
+        "https://models.hosted-on.kserve.hosting"
     )
-    """Endpoint URL to use."""
-    inject_instruction_format: bool = False
-    """Whether to inject the instruction format into the prompt."""
+
+    endpoint_url: str = ("")
+    """Endpoint URL to use, dynamically generate from the default model and inference_host"""
+
     model_kwargs: Optional[dict] = None
     """Keyword arguments to pass to the model."""
+    
     retry_sleep: float = 1.0
     """How long to try sleeping for if a rate limit is encountered"""
 
+    max_retries: int = 3
+    """Maximum number of retries on failure"""
+    
+    request_timeout: int = 10
+    """Timeout for the request in seconds"""
+
+    def __init__(self, **data):
+        @staticmethod
+        def get_default_model_name(inference_host: str) -> Optional[str]:
+            kserve_url = f'{inference_host}/v1/models'    
+            try:
+                response = requests.get(kserve_url)
+                response.raise_for_status()
+                models = response.json()
+                return models['models'][0]
+            except requests.exceptions.RequestException as e:
+                raise KserveMLModelFetchError(f"Failed to connect to kserve at {kserve_url}: {e}")
+
+        super().__init__(**data)
+        default_model = get_default_model_name(self.base_url)
+        self.endpoint_url: str = (
+            f"{self.base_url}/v2/models/{default_model}/infer" if default_model else ""
+        )
+        if not self.endpoint_url:
+            raise KserveMLEndpointError("Failed to construct the endpoint URL due to a missing default model name.")
+
+
     class Config:
         """Configuration for this pydantic object."""
-
+        
         extra = Extra.forbid
 
     @property
@@ -56,7 +109,7 @@ class KserveML(LLM):
         prompt: str,
         stop: Optional[List[str]] = None,
         run_manager: Optional[CallbackManagerForLLMRun] = None,
-        is_retry: bool = False,
+        retry_count: int = 0,
         **kwargs: Any,
     ) -> str:
         """Call out to a KserveML LLM inference endpoint.
@@ -73,9 +126,7 @@ class KserveML(LLM):
 
                 response = kserve_llm("Tell me a joke.")
         """
-
         _model_kwargs = self.model_kwargs or {}
-
         payload = {
             "id": "1",
             "inputs": [
@@ -89,49 +140,45 @@ class KserveML(LLM):
         }
         payload.update(_model_kwargs)
         payload.update(kwargs)
-        #print(f"Sending request to {self.endpoint_url} with payload: {payload}")  # Debug output
-
-        # send request
-        logging.debug(f"Sending request to {self.endpoint_url} with prompt: {prompt}")
-
 
         try:
-            response = requests.post(self.endpoint_url, json=payload)
-            logging.debug(f"Response received: {response.text}")
+            response = requests.post(self.endpoint_url, json=payload, timeout=self.request_timeout)
         except requests.exceptions.RequestException as e:
-            logging.error(f"Request exception: {e}")
-            raise ValueError(f"Error raised by inference endpoint: {e}")
+            if isinstance(e, requests.exceptions.Timeout):
+                raise KserveMLRequestError(f"Request timed out after {self.request_timeout} seconds.")
+            raise KserveMLRequestError(f"Error raised by inference endpoint: {e}")
+
+        if response.status_code == 500 and retry_count < self.max_retries:
+            wait_time = (2 ** retry_count) * self.retry_sleep
+            time.sleep(wait_time)
+            return self._call(prompt, stop, run_manager, retry_count=retry_count+1, **kwargs)
+
+        if response.status_code == 500:
+            raise KserveMLResponseError(
+                f"Error raised by inference API after maximum retries. Response: {response.text}"
+            )
 
         try:
-            #print (response.status_code)
-            if response.status_code == 500:
-                if not is_retry:
-                    import time
-
-                    time.sleep(self.retry_sleep)
-
-                    return self._call(prompt, stop, run_manager, is_retry=True)
-
-                raise ValueError(
-                    f"Error raised by inference API: 500, server maybe not ready yet"
-                    f"{response.text}"
-                )
             parsed_response = response.json()
-            text = parsed_response["outputs"][0]["data"][0]
-
-            #If prompt is part of the Answer, remove that part
-            if text.startswith(prompt):
-                text = text[len(prompt):]
-
-            #remove Answer part
-            keyword = "Answer: "
-            if keyword in text:
-                text= text[text.index(keyword) + len(keyword):]
-
-            return text
-
         except requests.exceptions.JSONDecodeError as e:
-            logging.error(f"JSON decode error: {e}. Response: {response.text}")
-            raise ValueError(
-                f"Error raised by inference API: {e}.\nResponse: {response.text}"
+            raise KserveMLResponseError(
+                f"Error decoding response from inference API: {e}. Response: {response.text}"
             )
+
+        if "outputs" not in parsed_response or not parsed_response["outputs"]:
+            raise KserveMLResponseError("Missing 'outputs' key in the response.")
+
+        output_data = parsed_response["outputs"][0]
+        if "data" not in output_data or not output_data["data"]:
+            raise KserveMLResponseError("Missing 'data' key in the response outputs.")
+
+        text = output_data["data"][0]
+
+        if text.startswith(prompt):
+            text = text[len(prompt):]
+
+        keyword = "Answer: "
+        if keyword in text:
+            text = text[text.index(keyword) + len(keyword):]
+
+        return text
