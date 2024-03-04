@@ -12,7 +12,7 @@ COPY requirements.txt ./
 
 USER 0
 
-ENV TRANSFORMERS_CACHE /app/model 
+ENV HF_HOME /app/model 
 
 RUN pip install --no-cache-dir -r requirements.txt
 

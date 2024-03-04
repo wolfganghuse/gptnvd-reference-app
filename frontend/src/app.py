@@ -21,7 +21,7 @@ DB_DIR: str = os.path.join(ABS_PATH, "db")
 
 
 # Set up RetrievelQA model
-rag_prompt_mistral = hub.pull("rlm/rag-prompt")
+rag_prompt_llama = hub.pull("rlm/rag-prompt-llama")
 
 device = f'cuda' if cuda.is_available() else 'cpu'
 
@@ -64,7 +64,7 @@ def retrieval_qa_chain(llm, vectorstore):
     qa_chain = RetrievalQA.from_chain_type(
         llm,
         retriever=vectorstore.as_retriever(),
-        chain_type_kwargs={"prompt": rag_prompt_mistral},
+        chain_type_kwargs={"prompt": rag_prompt_llama},
         return_source_documents=True,
     )
     return qa_chain
