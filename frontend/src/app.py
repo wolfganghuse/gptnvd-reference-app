@@ -4,6 +4,7 @@ import os
 from langchain import hub
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 from langchain_community.vectorstores import Milvus
+from langchain.schema import Document
 #from langchain.callbacks.manager import CallbackManager
 #from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 import chainlit as cl
@@ -21,7 +22,7 @@ DB_DIR: str = os.path.join(ABS_PATH, "db")
 
 
 # Set up RetrievelQA model
-rag_prompt_llama = hub.pull("rlm/rag-prompt-llama")
+rag_prompt_llama = hub.pull("rlm/rag-prompt")
 
 device = f'cuda' if cuda.is_available() else 'cpu'
 
@@ -66,6 +67,7 @@ def retrieval_qa_chain(llm, vectorstore):
         retriever=vectorstore.as_retriever(),
         chain_type_kwargs={"prompt": rag_prompt_llama},
         return_source_documents=True,
+        verbose=True
     )
     return qa_chain
 
@@ -115,6 +117,27 @@ async def main(message):
     Processes incoming chat messages.
 
     """
+# Check if the message is a command
+    if message.content.startswith('/'):
+        # Handle the drop vectorstore command
+        if message.content == '/drop_vectorstore':
+            try:
+                docs = [
+                    Document(page_content="empty collection",metadata={'source': '', 'page': 0}),
+                ]
+                vectorstore = Milvus.from_documents(
+                    docs,
+                    embeddings,
+                    drop_old=True,
+                    collection_name = MILVUS_COLLECTION,
+                    connection_args={"host": MILVUS_HOST, "port": MILVUS_PORT},
+                )
+
+                await cl.Message(content="Vectorstore collection cleared.").send()
+            except Exception as e:
+                await cl.Message(content=f"Failed to clear vectorstore collection: {str(e)}").send()
+            return
+        
     if  message.elements:
         documents = [file for file in message.elements if "pdf" in file.mime]
         for document in documents:
