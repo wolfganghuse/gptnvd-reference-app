@@ -53,9 +53,9 @@ s3 = boto3.client('s3',
 
 def load_model():
     llm = KserveML(
-      base_url=INFERENCE_ENDPOINT
+      base_url=INFERENCE_ENDPOINT,
+      request_timeout=45
     )
-
     return llm
 
 

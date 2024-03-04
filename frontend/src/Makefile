@@ -1,6 +1,6 @@
 # Customize these variables
 IMAGE_NAME ?= frontend
-TAG ?= 0.2.4
+TAG ?= 0.2.5
 DOCKER_REGISTRY ?= quay.io/wolfgangntnx
 CONTAINER_ENGINE ?= docker # or podman
 
