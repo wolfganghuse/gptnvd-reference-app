@@ -1,8 +1,102 @@
+frontend:
+  enabled: true
+  replicaCount: 1
+
+  image:
+    repository: "quay.io/wolfgangntnx/frontend"
+    pullPolicy: IfNotPresent
+
+  env: {}
+  # additional environment values
+  #  - name: myEnv
+  #    value: "abc"
+
+  imagePullSecrets: []
+  nameOverride: wh1
+  fullnameOverride: ""
+
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # Automatically mount a ServiceAccount's API credentials?
+    automount: true
+    # Annotations to add to the service account
+    annotations: {}
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  resources:
+    requests:
+      memory: "3Gi"
+      cpu: "1"
+
+  podAnnotations: {}
+  podLabels: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    port: 8000
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        nginx.ingress.kubernetes.io/proxy-body-size: 500M
+    hosts:
+      - host: frontend.gpt01dev01.cloudnative.nvdlab.net
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+    - secretName: frontend-tld-secret
+      hosts:
+        - frontend.gpt01dev01.cloudnative.nvdlab.net
+backend:
+  enabled: true
+
+  image:
+    repository: "quay.io/wolfgangntnx/doc-ingest"
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+
+  env: {}
+  # additional environment values
+  #  - name: myEnv
+  #    value: "abc"
+
+  imagePullSecrets: []
+  nameOverride: wh1
+  fullnameOverride: ""
+
+  resources: {}
+    # limits:
+    #   nvidia.com/gpu: "1"
+
 milvus:
-  host: milvus.milvus
-  port: 19530
-redis:
-  url: redis://redis-master.redis:6379
-image:
+  host: 
+  port: 
+  collection:
 inference:
-  endpoint: http://llm.llm/v2/models/gpt2/infer
+  endpoint: 
+s3:
+  endpoint: 
+  sslVerify: false
+  region: us-east-1
+  accessKey:
+  secretKey:
+  bucket: 
+kafka:
+  bootstrap:
+  externalPort:

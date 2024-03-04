@@ -1,12 +1,17 @@
+{{- if .Values.frontend.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend-service
+  name: {{ include "gpt-sample-app.fullname" . }}-svc
+  labels:
+    {{- include "gpt-sample-app.labels" . | nindent 4 }}
 spec:
-  selector:
-    app: frontend
-  type: ClusterIP
+  type: {{ .Values.frontend.service.type }}
   ports:
-    - protocol: TCP
-      port: 8501
-      targetPort: 8501
+    - port: {{ .Values.frontend.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "gpt-sample-app.selectorLabels" . | nindent 4 }}
+{{- end }}
