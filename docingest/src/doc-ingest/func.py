@@ -93,7 +93,7 @@ def main(context: Context):
 
         data = context.cloud_event.data
         notificationType = data["Records"][0]["eventName"]
-        if notificationType == "s3:ObjectCreated:Put":
+        if notificationType == "s3:ObjectCreated:Put" or notificationType == "s3:ObjectCreated:CompleteMultipartUpload":
             srcBucket = data["Records"][0]["s3"]["bucket"]["name"]
             srcObj = data["Records"][0]["s3"]["object"]["key"]
             with S3_LATENCY.time():

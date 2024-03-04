@@ -117,11 +117,9 @@ async def main(message):
     """
     if  message.elements:
         documents = [file for file in message.elements if "pdf" in file.mime]
-        if len(documents)==1:
-            result = upload_file_to_s3(documents[0])
+        for document in documents:
+            result = upload_file_to_s3(document)
             await cl.Message(content=result).send()
-        else:
-            await cl.Message(content="Currrently i can only handle PDF documents.").send()
         return
     chain = cl.user_session.get("chain")
     cb = cl.AsyncLangchainCallbackHandler()
