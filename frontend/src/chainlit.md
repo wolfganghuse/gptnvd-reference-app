@@ -33,3 +33,5 @@ Details:
 - BGE-large-en-v1.5 embedding model
 - RAG-pipeline using Milvus Vectorstore 
 - Chainlit-based Frontend
+
+<img src="ref-app.png" alt="Quick Start"></img>

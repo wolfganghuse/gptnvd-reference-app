@@ -105,9 +105,13 @@ def main(context: Context):
                     loader = PyPDFLoader(signed_url)
                 except:
                     logger.info(f'URL not found:: {signed_url}', extra=source_attributes)
-        
-                docs = loader.load()
-
+                    return "", 500
+                try:
+                    docs = loader.load()
+                except:
+                    logger.info(f'Error while processing:: {signed_url}', extra=source_attributes)
+                    return "", 500
+                
             # Split loaded documents into chunks
             text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=40)
             chunked_documents = text_splitter.split_documents(docs)
